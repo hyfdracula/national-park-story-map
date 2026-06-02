@@ -1,0 +1,16 @@
+{
+  "area": [
+    {"park": "三江源", "value": 19.07, "unit": "万km²"},
+    {"park": "大熊猫", "value": 2.20, "unit": "万km²"},
+    {"park": "东北虎豹", "value": 1.41, "unit": "万km²"},
+    {"park": "海南热带雨林", "value": 0.44, "unit": "万km²"},
+    {"park": "武夷山", "value": 0.13, "unit": "万km²"}
+  ],
+  "speciesCount": [
+    {"park": "三江源", "value": 5},
+    {"park": "大熊猫", "value": 5},
+    {"park": "东北虎豹", "value": 5},
+    {"park": "海南热带雨林", "value": 5},
+    {"park": "武夷山", "value": 5}
+  ]
+}

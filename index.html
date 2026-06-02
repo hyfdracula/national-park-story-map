@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>五大国家公园 · 林草故事地图</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+/* ============================================
+   DESIGN TOKENS & GLOBALS
+   Dark documentary theme · Forest green accent
+   ============================================ */
+:root {
+  --bg:         #08080c;
+  --surface:    #111118;
+  --surface-2:  #181820;
+  --border:     #252530;
+  --text:       #e0e0e4;
+  --text-2:     #9999a0;
+  --text-3:     #666670;
+  --accent:     #06d6a0;
+  --accent-dim: #059669;
+  --color-sj:   #06d6a0;
+  --color-dm:   #06d6a0;
+  --color-db:   #06d6a0;
+  --color-hn:   #06d6a0;
+  --color-wy:   #06d6a0;
+  --nav-h:      52px;
+  --radius:     8px;
+  --font:       -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+  --font-mono:  "SF Mono", "Cascadia Code", "Consolas", monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================
+   HERO
+   ============================================ */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, #0d1b1a 0%, var(--bg) 70%);
+}
+
+#hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(6,214,160,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(76,201,240,0.04) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+#hero h1 {
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: #f0f0f5;
+  z-index: 1;
+  max-width: 90vw;
+}
+
+#hero .accent { color: var(--accent); }
+
+#hero .subtitle {
+  margin-top: 1rem;
+  font-size: clamp(0.95rem, 2vw, 1.2rem);
+  color: var(--text-2);
+  max-width: 560px;
+  z-index: 1;
+}
+
+#hero .meta {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem 1.6rem;
+  font-size: 0.85rem;
+  color: var(--text-3);
+  z-index: 1;
+  max-width: 90vw;
+}
+
+#hero .meta span {
+  white-space: nowrap;
+  padding: 0.25rem 0.5rem;
+}
+
+#hero .scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  color: var(--text-3);
+  font-size: 0.8rem;
+  animation: float 2s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* ============================================
+   NAVIGATION BAR
+   ============================================ */
+#nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: var(--nav-h);
+  background: rgba(8,8,12,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  transition: all 0.3s;
+}
+
+#nav-bar.hidden { opacity: 0; pointer-events: none; }
+
+#nav-bar .nav-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: 0.8rem;
+  white-space: nowrap;
+}
+
+#nav-bar .nav-dot {
+  padding: 0.25rem 0.6rem;
+  height: 26px;
+  border-radius: 13px;
+  border: none;
+  background: transparent;
+  color: var(--text-3);
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+#nav-bar .nav-dot:hover { color: var(--text-2); background: var(--surface-2); }
+
+#nav-bar .nav-dot.active {
+  background: var(--accent);
+  color: #000;
+  font-weight: 600;
+}
+
+#nav-bar .nav-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ============================================
+   MAIN CONTENT LAYOUT
+   ============================================ */
+#main-wrap {
+  display: flex;
+  position: relative;
+}
+
+#content-panel {
+  width: 44%;
+  max-width: 620px;
+}
+
+#map-panel {
+  width: 56%;
+  position: sticky;
+  top: var(--nav-h);
+  height: calc(100vh - var(--nav-h));
+  align-self: flex-start;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  background: #0a0d14;
+}
+
+/* Leaflet强制占满 */
+#map .leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* 比例尺样式 */
+.leaflet-control-scale-line {
+  background: rgba(8,8,12,0.85) !important;
+  border: 1px solid var(--border) !important;
+  border-top: none !important;
+  color: #111 !important;
+  font-size: 12px !important;
+  font-family: var(--font-mono) !important;
+  font-weight: 600 !important;
+  height: 6px !important;
+  line-height: 2.6 !important;
+  padding: 2px 6px 0 6px !important;
+  margin-top: 12px !important;
+}
+
+/* 坐标显示 */
+.coords-display {
+  background: rgba(8,8,12,0.85) !important;
+  color: var(--text-2) !important;
+  padding: 4px 10px !important;
+  font-size: 11px !important;
+  font-family: var(--font-mono) !important;
+  border-radius: 4px !important;
+  border: 1px solid var(--border) !important;
+  margin-top: 56px !important;
+}
+
+/* ============================================
+   PARK SECTIONS (left panel)
+   ============================================ */
+.park-section {
+  padding: 3.5rem 2.5rem 3rem 3rem;
+  border-bottom: 1px solid var(--border);
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: background 0.4s;
+}
+
+.park-section.active-section { background: var(--surface); }
+
+.park-section .chapter-num {
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.8rem;
+}
+
+.park-section h2 {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.8rem;
+}
+
+.park-section .park-location { color: var(--text-2); font-size: 0.9rem; margin-bottom: 0.5rem; }
+.park-section .park-area    { color: var(--text-3); font-size: 0.85rem; margin-bottom: 0.5rem; }
+.park-section .park-desc    { color: var(--text-2); font-size: 0.95rem; max-width: 52ch; line-height: 1.85; margin-bottom: 1.5rem; }
+
+.park-section .sub-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 0.8rem;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(6,214,160,0.06); }
+
+.btn-primary {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.btn-primary:hover { background: var(--accent-dim); border-color: var(--accent-dim); color: #000; }
+
+/* ============================================
+   DETAIL PANEL (Module 3) - top of map
+   ============================================ */
+#map-top-panel {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  max-height: 84%;
+  pointer-events: none;
+}
+
+#map-top-panel > * { pointer-events: auto; }
+
+.mtp-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 10px 12px;
+  background: rgba(8,8,12,0.94);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.mtp-tab {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 0.8rem;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.mtp-tab:hover { border-color: var(--accent); color: var(--accent); }
+.mtp-tab.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+
+.mtp-compare {
+  color: var(--accent) !important;
+  margin-left: 8px;
+}
+
+.mtp-compare:hover { background: rgba(6,214,160,0.12) !important; }
+
+.mtp-close {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-2);
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.mtp-close:hover { background: var(--surface-2); color: var(--text); }
+
+.mtp-content {
+  background: rgba(8,8,12,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  overflow-y: auto;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+}
+
+.mtp-content.show {
+  max-height: 60vh;
+  opacity: 1;
+  padding: 1.2rem 1.5rem;
+}
+
+/* Sub-tabs for geography */
+.mtp-subtabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.mtp-subtab {
+  padding: 4px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-3);
+  font-size: 0.75rem;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mtp-subtab:hover, .mtp-subtab.active { border-color: var(--accent); color: var(--accent); }
+.mtp-subtab.active { background: rgba(6,214,160,0.1); }
+
+.mtp-subcontent { font-size: 0.9rem; color: var(--text-2); line-height: 1.75; }
+
+/* Slide-in animation for panel */
+.mtp-slide-in {
+  animation: mtpSlideIn 0.35s cubic-bezier(0.16,1,0.3,1);
+}
+
+@keyframes mtpSlideIn {
+  from { opacity: 0; transform: translateY(-100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes mtpSlideOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-100%); }
+}
+
+.mtp-slide-out {
+  animation: mtpSlideOut 0.3s cubic-bezier(0.4,0,0.2,1) forwards;
+  pointer-events: none;
+}
+
+/* Detail panel toggle button */
+#detail-toggle {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: rgba(8,8,12,0.9);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s;
+  margin-top: 6px;
+}
+
+#detail-toggle:hover { background: var(--surface); border-color: var(--accent); }
+
+#detail-toggle.dt-hidden { display: none; }
+
+/* Timeline */
+.timeline { position: relative; padding-left: 1.5rem; }
+.timeline::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 2px; background: var(--border);
+}
+.timeline-item { position: relative; margin-bottom: 1.2rem; padding-left: 1rem; }
+.timeline-item::before {
+  content: ""; position: absolute; left: -1.55rem; top: 0.4rem;
+  width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+}
+.timeline-year  { font-size: 0.75rem; font-family: var(--font-mono); color: var(--accent); font-weight: 600; }
+.timeline-event { font-size: 0.9rem; color: var(--text-2); margin-top: 0.15rem; }
+
+/* Accordion */
+.accordion details { margin-bottom: 0.5rem; }
+.accordion summary {
+  cursor: pointer; padding: 0.6rem 0;
+  font-weight: 600; font-size: 0.95rem;
+  border-bottom: 1px solid var(--border);
+  list-style: none;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.accordion summary::-webkit-details-marker { display: none; }
+.accordion summary::after { content: "+"; font-size: 1.1rem; color: var(--text-3); }
+.accordion details[open] summary::after { content: "-"; }
+.accordion details p { padding: 0.6rem 0; font-size: 0.9rem; color: var(--text-2); line-height: 1.75; }
+
+/* Species cards */
+.species-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.species-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+.species-card h4 { font-size: 0.95rem; margin-bottom: 0.2rem; }
+.species-card .latin { font-size: 0.75rem; font-style: italic; color: var(--text-3); margin-bottom: 0.4rem; }
+.species-card .level {
+  display: inline-block; font-size: 0.7rem;
+  padding: 0.15rem 0.45rem; border-radius: 4px;
+  background: rgba(6,214,160,0.12); color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+.species-card p { font-size: 0.82rem; color: var(--text-2); line-height: 1.6; }
+
+.species-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.species-link:hover { border-color: var(--accent); }
+
+/* Gallery */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+.gallery-grid img {
+  width: 100%; aspect-ratio: 16/10;
+  object-fit: cover; border-radius: var(--radius);
+  cursor: pointer; transition: transform 0.2s;
+  background: var(--surface-2);
+}
+.gallery-grid img:hover { transform: scale(1.03); }
+
+/* Lightbox */
+#lightbox {
+  position: fixed; inset: 0; z-index: 3000;
+  background: rgba(0,0,0,0.92);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+#lightbox.hidden { display: none; }
+#lightbox img { max-width: 90vw; max-height: 85dvh; border-radius: 4px; }
+
+/* Conservation highlights */
+.highlights { display: grid; gap: 0.6rem; margin-top: 1rem; }
+.highlight-card {
+  background: rgba(6,214,160,0.06);
+  border-left: 2px solid var(--accent);
+  padding: 0.6rem 0.8rem;
+  font-size: 0.88rem;
+  color: var(--text-2);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+/* References */
+.ref-list { list-style: none; display: grid; gap: 0.5rem; }
+.ref-list a {
+  color: var(--accent); text-decoration: none; font-size: 0.88rem;
+  border-bottom: 1px solid transparent; transition: border-color 0.2s;
+}
+.ref-list a:hover { border-color: var(--accent); }
+
+/* ============================================
+   COMPARE MODAL (Module 4)
+   ============================================ */
+#compare-modal {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.78);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+#compare-modal.show { opacity: 1; pointer-events: auto; }
+.compare-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 90%; max-width: 860px;
+  max-height: 85dvh; overflow-y: auto;
+  padding: 1.5rem;
+}
+.compare-content h3 { font-size: 1.1rem; margin-bottom: 1.2rem; }
+.chart-wrap { width: 100%; height: 340px; margin-bottom: 1rem; }
+.data-note { font-size: 0.75rem; color: var(--text-3); text-align: center; margin-top: 1rem; }
+
+/* ============================================
+   STORY NAVIGATION (Module 5)
+   ============================================ */
+#story-nav {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 900;
+  display: flex;
+  gap: 0.6rem;
+  background: rgba(8,8,12,0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  padding: 0.4rem;
+}
+
+#story-nav button {
+  padding: 0.55rem 1.2rem;
+  border-radius: 30px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 0.82rem;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+#story-nav button:hover { color: var(--text); background: var(--surface-2); }
+
+#story-nav #btn-autoplay {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  font-weight: 600;
+}
+#story-nav #btn-autoplay:hover { background: var(--accent-dim); }
+
+/* ============================================
+   TOAST
+   ============================================ */
+.toast {
+  position: fixed;
+  top: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3000;
+  background: rgba(0,0,0,0.92);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0.65rem 1.5rem;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  animation: toastIn 0.3s ease-out, toastOut 0.4s 3.5s ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes toastIn  { from { opacity: 0; transform: translateX(-50%) translateY(-10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+
+/* ============================================
+   PARK LABEL (map overlay)
+   ============================================ */
+.park-label-popup {
+  background: rgba(0,0,0,0.9) !important;
+  border: 1px solid var(--accent) !important;
+  color: var(--accent) !important;
+  padding: 10px 18px !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+  font-family: var(--font) !important;
+  pointer-events: none !important;
+  letter-spacing: 0.02em !important;
+  white-space: nowrap !important;
+  animation: labelFadeIn 0.35s ease-out !important;
+  margin-top: 48px !important;
+}
+
+@keyframes labelFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   MAP CONTROLS
+   ============================================ */
+.basemap-switch { display: flex; gap: 4px; }
+.basemap-switch button {
+  padding: 5px 10px; border-radius: 4px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.7); color: var(--text-3);
+  font-size: 11px; font-family: var(--font); cursor: pointer;
+  transition: all 0.2s;
+}
+.basemap-switch button.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+/* ============================================
+   FOOTER
+   ============================================ */
+#page-footer {
+  padding: 2rem 3rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem; color: var(--text-3);
+  display: flex; flex-wrap: wrap; gap: 1rem;
+  justify-content: space-between;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  #main-wrap { flex-direction: column; }
+  #content-panel { width: 100%; max-width: none; }
+  #map-panel { width: 100%; height: 55vh; position: relative; top: 0; }
+  .park-section { padding: 2rem 1.2rem; min-height: auto; }
+  #story-nav { bottom: 1rem; }
+  #story-nav button { padding: 0.45rem 0.8rem; font-size: 0.75rem; }
+  #detail-panel { width: 95%; max-height: 90dvh; }
+}
+
+/* ============================================
+   UTILITY
+   ============================================ */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================
+     HERO
+     ============================================ -->
+<section id="hero">
+  <h1>中国<span class="accent">五大</span><br>国家公园</h1>
+  <p class="subtitle">从青藏高原到武夷山脉，从雪豹到海南长臂猿，以交互式地图讲述首批五个国家公园的生态故事</p>
+  <div class="meta">
+    <span>三江源</span><span>大熊猫</span><span>东北虎豹</span><span>海南热带雨林</span><span>武夷山</span>
+  </div>
+</section>
+
+<!-- ============================================
+     NAVIGATION BAR
+     ============================================ -->
+<nav id="nav-bar">
+  <span class="nav-label">公园导航</span>
+  <button class="nav-dot" data-park="sanjiangyuan">三江源</button>
+  <button class="nav-dot" data-park="daxiongmao">大熊猫</button>
+  <button class="nav-dot" data-park="dongbei">东北虎豹</button>
+  <button class="nav-dot" data-park="hainan">海南热带雨林</button>
+  <button class="nav-dot" data-park="wuyishan">武夷山</button>
+  <div class="nav-actions">
+    <button class="btn" onclick="showCompare()" style="font-size:0.75rem;border-color:var(--accent);color:var(--accent);">&#x1F4CA; 对比图表</button>
+  </div>
+</nav>
+
+<!-- ============================================
+     MAIN CONTENT
+     ============================================ -->
+<div id="main-wrap">
+  <!-- Left: content -->
+  <div id="content-panel">
+    <!-- Sections injected by JS -->
+  </div>
+
+  <!-- Right: map -->
+  <div id="map-panel">
+    <div id="map-top-panel" style="display:none;">
+      <div class="mtp-tabs">
+        <button class="mtp-tab" data-module="history">历史沿革</button>
+        <button class="mtp-tab" data-module="geography">地理环境</button>
+        <button class="mtp-tab" data-module="species">旗舰物种</button>
+        <button class="mtp-tab" data-module="conservation">保护成效</button>
+        <button class="mtp-tab" data-module="gallery">图片画廊</button>
+        <button class="mtp-tab" data-module="references">相关文献</button>
+        <button class="mtp-tab mtp-compare" onclick="showCompare()">&#x1F4CA; 对比图表</button>
+        <button class="mtp-close" onclick="closeDetail()">&#x2715;</button>
+      </div>
+      <div class="mtp-content" id="mtp-content"></div>
+    </div>
+    <div id="detail-toggle" class="dt-hidden" onclick="reopenDetail()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div id="map"></div>
+  </div>
+</div>
+
+<!-- ============================================
+     DETAIL PANEL (top of map)
+     ============================================ -->
+
+<!-- ============================================
+     COMPARE MODAL
+     ============================================ -->
+<div id="compare-modal">
+  <div class="compare-content">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h3 style="margin-bottom:0;">五大国家公园数据对比</h3>
+      <button class="detail-close" onclick="closeCompare()">&#x2715;</button>
+    </div>
+    <div id="chart-area" class="chart-wrap"></div>
+    <div id="chart-species" class="chart-wrap"></div>
+    <p class="data-note">数据来源：国家林业和草原局公布数据及各公园总体规划</p>
+  </div>
+</div>
+
+<!-- ============================================
+     LIGHTBOX
+     ============================================ -->
+<div id="lightbox" class="hidden" onclick="this.classList.add('hidden')">
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<!-- ============================================
+     STORY NAVIGATION
+     ============================================ -->
+<div id="story-nav">
+  <button id="btn-prev" onclick="prevPark()">&#x25C0; 上一站</button>
+  <button id="btn-autoplay" onclick="toggleAutoPlay()">&#x25B6; 开始漫游</button>
+  <button id="btn-next" onclick="nextPark()">下一站 &#x25B6;</button>
+</div>
+
+<!-- ============================================
+     FOOTER
+     ============================================ -->
+<footer id="page-footer">
+  <span>北京林业大学地理信息科学专业 2026 综合实习第三组 课题五 · 林草故事地图</span>
+  <span>数据来源：国家公园管理局 · IUCN · UNESCO</span>
+</footer>
+
+<!-- Leaflet -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- ECharts -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+
+<!-- ============================================
+     ALL APPLICATION LOGIC
+     ============================================ -->
+<script>
+"use strict";
+
+/* ── Constants ────────────────────────────── */
+const PARK_ORDER = ["sanjiangyuan","daxiongmao","dongbei","hainan","wuyishan"];
+const PARK_COLORS = {
+  sanjiangyuan: "#06d6a0",
+  daxiongmao:  "#06d6a0",
+  dongbei:     "#06d6a0",
+  hainan:      "#06d6a0",
+  wuyishan:    "#06d6a0"
+};
+
+/* ── Inline content data (no fetch, works with file://) ── */
+const CONTENT_DATA = {"sanjiangyuan":{"name":"三江源国家公园","established":"2021年10月正式设立","location":"青海省南部，青藏高原腹地","area":"19.07万平方公里","description":"三江源国家公园位于青藏高原腹地，是中国面积最大的国家公园，平均海拔4500米以上。这里是长江、黄河、澜沧江三条亚洲重要河流的发源地，被誉为「中华水塔」，也是世界上海拔最高、面积最大的高原湿地生态系统。","color":"#4cc9f0","history":{"timeline":[{"year":"2000年","event":"建立三江源省级自然保护区"},{"year":"2003年","event":"升格为国家级自然保护区"},{"year":"2016年","event":"三江源国家公园体制试点正式启动"},{"year":"2021年","event":"正式设立三江源国家公园，成为首批五个国家公园中面积最大的一个"}]},"geography":{"topography":"以高原山地为主，平均海拔4500米以上，昆仑山脉、唐古拉山脉和巴颜喀拉山脉交汇于此。地貌包括高寒草甸、冰川、湖泊和河谷，是中国冰川集中分布区之一。","climate":"典型的高原大陆性气候，年均气温在0℃以下，冬季漫长寒冷，夏季短暂凉爽。年降水量300-500毫米，集中在夏季，蒸发量大，昼夜温差显著。","hydrology":"长江总水量的25%、黄河总水量的49%、澜沧江总水量的15%均源自三江源地区。区内湖泊星罗棋布，包括扎陵湖、鄂陵湖等著名淡水湖，湿地面积超过3万平方公里。","ecosystem":"高寒草甸生态系统为主，辅以高寒湿地、高寒草原和高寒荒漠。是全球高海拔地区生物多样性最丰富的区域之一，也是重要的碳汇区和气候调节区。"},"species":[{"name":"藏羚羊","latin":"Pantholops hodgsonii","level":"近危 (NT)","description":"青藏高原特有物种，以季节性迁徙闻名，雄性有细长直角。三江源是藏羚羊最重要的栖息地之一。","baike_url":"https://baike.baidu.com/item/%E8%97%8F%E7%BE%9A%E7%BE%8A","baike_label":"百度百科"},{"name":"雪豹","latin":"Panthera uncia","level":"易危 (VU)","description":"高原生态系统的顶级捕食者，被称为「雪山之王」。三江源是中国雪豹种群密度最高的区域之一。","baike_url":"https://baike.baidu.com/item/%E9%9B%AA%E8%B1%B9","baike_label":"百度百科"},{"name":"藏野驴","latin":"Equus kiang","level":"无危 (LC)","description":"高原特有的野马科动物，善于在开阔的高寒草甸上奔跑，常成群活动。","baike_url":"https://baike.baidu.com/item/%E8%97%8F%E9%87%8E%E9%A9%B4","baike_label":"百度百科"},{"name":"黑颈鹤","latin":"Grus nigricollis","level":"近危 (NT)","description":"唯一生活在高原的鹤类，每年夏季在三江源湿地繁殖，是湿地生态健康的指示物种。","baike_url":"https://baike.baidu.com/item/%E9%BB%91%E9%A2%88%E9%B9%A4","baike_label":"百度百科"},{"name":"青海云杉","latin":"Picea crassifolia","level":"无危 (LC)","description":"祁连山和昆仑山地区的特有针叶树种，耐寒耐旱，构成三江源重要的水源涵养林。","baike_url":"https://baike.baidu.com/item/%E9%9D%92%E6%B5%B7%E4%BA%91%E6%9D%89","baike_label":"百度百科"}],"conservation":{"text":"三江源国家公园自试点以来，生态保护取得显著成效。通过退牧还草、生态移民、禁牧封育等措施，草原植被覆盖度明显提高，水源涵养能力增强。","highlights":["草地覆盖率从2016年的74%提升至2023年的82%以上","藏羚羊种群数量从1980年代的不足2万只恢复至超过7万只","雪豹种群数量稳定在1000只以上，居全国首位","黑颈鹤数量从不足200只增长至超过500只","扎陵湖、鄂陵湖水面面积持续扩大，水资源总量增加"]},"gallery":["https://i2.chinanews.com.cn/simg/hd/2021/10/12/b03360e8e0b0448a9135180cdb658819.jpg","https://i2.chinanews.com.cn/simg/hd/2021/10/12/c89bb84d11ce41efb6e52378f74e6ede.jpg","https://i2.chinanews.com.cn/simg/hd/2021/10/12/87ea0cbae6ad4668b1615b1130500f45.jpg","https://i2.chinanews.com.cn/simg/hd/2021/10/12/8bbb5e6f20d74412ac68b659ff968ba0.jpg","https://i2.chinanews.com.cn/simg/ypt/2023/230730/b88549ae-3967-4ece-9cb1-67385cf33087_zsite.jpg"],"references":[{"title":"三江源国家公园管理局","url":"http://www.sanjiangyuan.org.cn/"},{"title":"三江源国家公园总体规划（2023-2030年）","url":"https://www.gov.cn/"},{"title":"IUCN 世界遗产名录 - 三江源","url":"https://whc.unesco.org/"}]},"daxiongmao":{"name":"大熊猫国家公园","established":"2021年10月正式设立","location":"四川、陕西、甘肃三省交界，横断山脉与秦岭交汇地带","area":"2.2万平方公里","description":"大熊猫国家公园横跨四川、陕西、甘肃三省，覆盖了中国大熊猫野生种群的主要栖息地。公园以保护大熊猫及其栖息地为核心，连接了多个原本孤立的大熊猫种群，构建了完整的生态廊道网络，对维持大熊猫种群的长期生存和基因交流具有重要意义。","color":"#06d6a0","history":{"timeline":[{"year":"1963年","event":"中国建立首批大熊猫自然保护区（卧龙、白河等）"},{"year":"2014年","event":"中国启动大熊猫国家公园体制试点前期研究"},{"year":"2017年","event":"大熊猫国家公园体制试点方案获批"},{"year":"2021年","event":"正式设立大熊猫国家公园"},{"year":"2024年","event":"大熊猫国家公园建设成效显著，野外种群持续增长"}]},"geography":{"topography":"横跨岷山、邛崃山、大相岭、小相岭、秦岭五大山系，海拔从500米到6000米以上不等。地形复杂多变，山高谷深，是中国地势第一阶梯向第二阶梯过渡的典型区域。","climate":"亚热带湿润气候向温带过渡，垂直气候带谱完整。年均气温10-15℃，年降水量800-1800毫米，云雾多、湿度大，为箭竹等大熊猫主食竹类提供了理想生长条件。","hydrology":"岷江、嘉陵江、汉江等多条河流的发源地，水资源丰富。密集的溪流和瀑布构成了独特的水文景观，也是大熊猫和众多伴生物种的主要水源。","ecosystem":"以亚热带常绿阔叶林和山地暗针叶林为主，是全球34个生物多样性热点区域之一。除大熊猫外，还栖息着金丝猴、羚牛、朱鹮等珍稀物种，被誉为「生物多样性宝库」。"},"species":[{"name":"大熊猫","latin":"Ailuropoda melanoleuca","level":"易危 (VU)","description":"中国的国宝和全球生物多样性保护的旗舰物种，以竹子为主食，大熊猫国家公园保护了超过80%的野生种群。","baike_url":"https://baike.baidu.com/item/%E5%A4%A7%E7%86%8A%E7%8C%AB","baike_label":"百度百科"},{"name":"川金丝猴","latin":"Rhinopithecus roxellana","level":"濒危 (EN)","description":"中国特有灵长类动物，身披金色长毛，面颊呈淡蓝色，栖息于海拔1500-3400米的山地森林中。","baike_url":"https://baike.baidu.com/item/%E5%B7%9D%E9%87%91%E4%B8%9D%E7%8C%B4","baike_label":"百度百科"},{"name":"羚牛","latin":"Budorcas taxicolor","level":"易危 (VU)","description":"大型有蹄类动物，外形似牛又似羚，被当地人称为「六不像」，是高山森林生态系统的代表性物种。","baike_url":"https://baike.baidu.com/item/%E7%BE%9A%E7%89%9B","baike_label":"百度百科"},{"name":"珙桐","latin":"Davidia involucrata","level":"易危 (VU)","description":"被称为「植物活化石」和「中国鸽子树」，是第三纪古热带植物区系的孑遗树种，花形如白鸽展翅。","baike_url":"https://baike.baidu.com/item/%E7%8F%99%E6%A1%90","baike_label":"百度百科"},{"name":"红豆杉","latin":"Taxus chinensis","level":"濒危 (EN)","description":"古老珍稀树种，树皮和枝叶含有抗癌活性物质紫杉醇，具有极高的科研和药用价值。","baike_url":"https://baike.baidu.com/item/%E7%BA%A2%E8%B1%86%E6%9D%89","baike_label":"百度百科"}],"conservation":{"text":"大熊猫国家公园建立后，保护区之间的生态廊道逐步贯通，孤立种群间的基因交流得以恢复，大熊猫野外种群数量稳步增长。","highlights":["野生大熊猫数量从1980年代的约1100只增长至1864只（第四次全国调查）","大熊猫栖息地面积扩大至约258万公顷","大熊猫受威胁等级从「濒危」降为「易危」","生态廊道连接了多个孤立种群，基因多样性改善","同时保护了超过8000种伴生动植物"]},"gallery":["https://i2.chinanews.com.cn/simg/hd/2021/10/12/b0d020b81aa64765b0d6238209348b71.jpg","https://i2.chinanews.com.cn/simg/hd/2021/10/12/da6639e7997e49b9a3a401af94870fbd.jpg","https://i2.chinanews.com.cn/simg/hd/2021/10/12/81c357ebc21643599c0063e03a8e7f2c.jpg","https://picsum.photos/seed/panda-mountain/800/500","https://picsum.photos/seed/panda-bamboo/800/500"],"references":[{"title":"大熊猫国家公园管理局","url":"https://www.giantpandanationalpark.com/"},{"title":"IUCN 红色名录 - 大熊猫","url":"https://www.iucnredlist.org/species/712/121745669"},{"title":"全国第四次大熊猫调查结果","url":"https://www.forestry.gov.cn/"}]},"dongbei":{"name":"东北虎豹国家公园","established":"2021年10月正式设立","location":"吉林省和黑龙江省交界，长白山脉北段","area":"1.41万平方公里","description":"东北虎豹国家公园位于中国东北部长白山脉，是中国最大的野生东北虎和东北豹栖息地。该公园地处中俄朝三国交界地带，与俄罗斯远东地区的虎豹栖息地相连，是东北虎跨境迁徙和种群交流的关键通道，对于恢复东北虎豹野生种群具有不可替代的作用。","color":"#f8961e","history":{"timeline":[{"year":"2000年前","event":"中国境内东北虎数量不足10只，东北豹几乎绝迹"},{"year":"2010年","event":"中国启动东北虎豹保护与栖息地恢复工程"},{"year":"2017年","event":"东北虎豹国家公园体制试点启动"},{"year":"2021年","event":"正式设立东北虎豹国家公园"},{"year":"2024年","event":"东北虎数量恢复至70只以上，东北豹恢复至80只以上"}]},"geography":{"topography":"以中低山和丘陵为主，海拔300-1500米，属长白山脉延伸地带。地貌包括山地、丘陵、河谷平原和台地，地势由东南向西北倾斜。","climate":"温带大陆性季风气候，冬季漫长寒冷（最低可达-40℃），夏季温暖湿润。年均气温2-5℃，年降水量500-800毫米，积雪期长达5个月。","hydrology":"图们江、绥芬河等水系贯穿公园，密集的河网为野生动物提供了充足的水源。冬季河面结冰，形成野生动物跨越的天然通道。","ecosystem":"温带针阔混交林生态系统，以红松、蒙古栎等为主要树种。是中国北方生物多样性最丰富的地区之一，完整的食物链支持了东北虎、东北豹等顶级捕食者的生存。"},"species":[{"name":"东北虎","latin":"Panthera tigris altaica","level":"濒危 (EN)","description":"世界上体型最大的虎亚种，又名西伯利亚虎。成年雄性体重可达250公斤，需要约500平方公里的领地范围。","baike_url":"https://baike.baidu.com/item/%E4%B8%9C%E5%8C%97%E8%99%8E","baike_label":"百度百科"},{"name":"东北豹","latin":"Panthera pardus orientalis","level":"极危 (CR)","description":"世界上最稀少的豹亚种之一，全球野生数量约100只，东北虎豹国家公园是其在中国唯一的稳定分布区。","baike_url":"https://baike.baidu.com/item/%E8%BF%9C%E4%B8%9C%E8%B1%B9","baike_label":"百度百科"},{"name":"梅花鹿","latin":"Cervus nippon","level":"易危 (VU)","description":"东北虎和东北豹的主要猎物之一，栖息于针阔混交林和林缘草地，是食物链中关键的中间环节。","baike_url":"https://baike.baidu.com/item/%E6%A2%85%E8%8A%B1%E9%B9%BF","baike_label":"百度百科"},{"name":"黑熊","latin":"Ursus thibetanus","level":"易危 (VU)","description":"典型的林栖动物，胸部有醒目的白色V形斑纹，以植物果实、昆虫和小型动物为食。","baike_url":"https://baike.baidu.com/item/%E4%BA%9A%E6%B4%B2%E9%BB%91%E7%86%8A","baike_label":"百度百科"},{"name":"红松","latin":"Pinus koraiensis","level":"易危 (VU)","description":"东北森林的建群树种，松籽是松鼠、花鼠等小动物的主要食物来源，支撑了整个森林食物网的基础。","baike_url":"https://baike.baidu.com/item/%E7%BA%A2%E6%9D%BE","baike_label":"百度百科"}],"conservation":{"text":"东北虎豹国家公园的建立是挽救这两个濒危物种的决定性措施。通过栖息地恢复、反盗猎行动和跨境保护合作，虎豹种群数量实现了历史性恢复。","highlights":["东北虎野外种群从2010年的不足10只恢复至70只以上","东北豹从近乎灭绝恢复至80只以上","栖息地面积扩大，连通性改善","建立了天地空一体化监测系统，实时掌握虎豹活动","与俄罗斯建立跨境保护合作机制"]},"gallery":["https://i2.chinanews.com.cn/simg/hd/2021/10/12/8ce46340a5eb4389824d2dfbd1ff5130.jpg","https://i2.chinanews.com.cn/simg/hd/2021/10/12/ca6706b94cd94eaabcff0e98eaf29089.jpg","https://i2.chinanews.com.cn/simg/hd/2021/10/12/5620b5687eaa4c848a0c997a2eb02f0c.jpg","https://i2.chinanews.com.cn/simg/hd/2021/10/12/14b8978236b14258981d71b861ef9d8d.jpg","https://picsum.photos/seed/changbai-snow/800/500"],"references":[{"title":"东北虎豹国家公园管理局","url":"https://www.nationalpark.gov.cn/"},{"title":"IUCN 红色名录 - 东北虎","url":"https://www.iucnredlist.org/"},{"title":"WWF 东北虎保护项目","url":"https://www.wwfchina.org/"}]},"hainan":{"name":"海南热带雨林国家公园","established":"2021年10月正式设立","location":"海南省中南部，五指山至黎母山区域","area":"0.44万平方公里","description":"海南热带雨林国家公园位于海南岛中南部，是中国唯一的岛屿型热带雨林生态系统。公园保存了中国最完整、最典型的岛屿热带雨林，是海南长臂猿这一全球最濒危灵长类动物唯一的栖息地，被誉为「热带北缘的生物多样性王国」。","color":"#f72585","history":{"timeline":[{"year":"1980年","event":"建立霸王岭、尖峰岭等自然保护区，海南长臂猿仅存7-8只"},{"year":"2019年","event":"海南热带雨林国家公园体制试点启动"},{"year":"2021年","event":"正式设立海南热带雨林国家公园"},{"year":"2024年","event":"海南长臂猿种群恢复至7群42只，创历史新高"}]},"geography":{"topography":"以中山和低山地貌为主，五指山海拔1867米为海南最高峰。地势中南部高四周低，山地、丘陵、台地和平原环状分布，造就了丰富的垂直植被带谱。","climate":"热带季风气候，全年高温多雨，年均气温22-26℃，年降水量2000-3000毫米，是中国降水最丰富的地区之一。受台风影响较大，形成了独特的台风干扰生态系统。","hydrology":"南渡江、万泉河、昌化江等海南主要河流均发源于热带雨林地区。密集的溪流和瀑布景观丰富，森林涵养水源功能显著，被誉为「海南水塔」。","ecosystem":"岛屿热带雨林生态系统，植被类型包括热带低地雨林、热带山地雨林和热带云雾林。特有物种比例极高，是研究岛屿生物地理学和热带生态学的天然实验室。"},"species":[{"name":"海南长臂猿","latin":"Nomascus hainanus","level":"极危 (CR)","description":"全球最濒危的灵长类动物，仅分布于海南热带雨林国家公园。成年雄性全身黑色，雌性金黄色。2024年种群恢复至7群42只。","baike_url":"https://baike.baidu.com/item/%E6%B5%B7%E5%8D%97%E9%95%BF%E8%87%82%E7%8C%BF","baike_label":"百度百科"},{"name":"海南坡鹿","latin":"Cervus eldii hainanus","level":"濒危 (EN)","description":"海南特有亚种，曾一度濒临灭绝（不足30只），经保护已恢复至2000余只，是物种拯救保护的典范。","baike_url":"https://baike.baidu.com/item/%E6%B5%B7%E5%8D%97%E5%9D%A1%E9%B9%BF","baike_label":"百度百科"},{"name":"海南山鹧鸪","latin":"Arborophila ardens","level":"易危 (VU)","description":"海南特有鸟类，栖息于海拔800-1500米的山地原始林，是热带雨林健康的指示物种。","baike_url":"https://baike.baidu.com/item/%E6%B5%B7%E5%8D%97%E5%B1%B1%E9%B9%A7%E9%B8%AA","baike_label":"百度百科"},{"name":"海南苏铁","latin":"Cycas hainanensis","level":"濒危 (EN)","description":"古老的裸子植物，已有3亿年演化历史，是热带雨林的「活化石」。海南是其全球分布中心之一。","baike_url":"https://baike.baidu.com/item/%E6%B5%B7%E5%8D%97%E8%8B%8F%E9%93%81","baike_label":"百度百科"},{"name":"坡垒","latin":"Hopea hainanensis","level":"濒危 (EN)","description":"海南热带雨林的标志性树种，龙脑香科植物，木材优质，是热带雨林顶级群落的建群种。","baike_url":"https://baike.baidu.com/item/%E5%9D%A1%E5%9E%92","baike_label":"百度百科"}],"conservation":{"text":"海南热带雨林国家公园建立后，通过严格的栖息地保护和生态修复，濒危物种保护成效显著，特别是海南长臂猿的种群恢复成为全球濒危物种保护的成功范例。","highlights":["海南长臂猿从1980年的7-8只恢复至7群42只（2024年）","海南坡鹿从不足30只恢复至2000余只","热带雨林覆盖率提高至95%以上","核心保护区实现全面禁伐禁猎","建立热带雨林生态系统长期定位监测网络"]},"gallery":["https://i2.chinanews.com.cn/simg/hd/2021/10/12/1a3efd814736441dac571ca63d8f5e2f.jpg","https://i2.chinanews.com.cn/simg/hd/2021/10/12/9eec7fc9731a4dafa2851b96d36c40da.jpg","https://i2.chinanews.com.cn/simg/hd/2021/10/12/f8f13adfe38f41eeb66d0e868d5b8720.jpg","https://i2.chinanews.com.cn/simg/hd/2021/10/12/db13be0e82db41a08dd77df15905a31f.jpg","https://picsum.photos/seed/hainan-jungle/800/500"],"references":[{"title":"海南热带雨林国家公园管理局","url":"https://www.hntrnnp.com/"},{"title":"IUCN 红色名录 - 海南长臂猿","url":"https://www.iucnredlist.org/"},{"title":"全球环境基金(GEF)海南项目","url":"https://www.thegef.org/"}]},"wuyishan":{"name":"武夷山国家公园","established":"2021年10月正式设立","location":"福建省与江西省交界，武夷山脉北段","area":"0.13万平方公里（1280平方公里）","description":"武夷山国家公园横跨福建、江西两省，是中国唯一同时拥有世界文化与自然双重遗产的国家公园。公园以中亚热带原生性常绿阔叶林生态系统和丹霞地貌为特色，保存了地球同纬度最完整、最典型、面积最大的中亚热带原生性森林生态系统。","color":"#7209b7","history":{"timeline":[{"year":"1979年","event":"建立武夷山自然保护区，为中国首批国家级自然保护区之一"},{"year":"1999年","event":"武夷山被列入联合国教科文组织世界文化与自然双重遗产名录"},{"year":"2016年","event":"武夷山国家公园体制试点启动"},{"year":"2021年","event":"正式设立武夷山国家公园，面积最小但文化和生态含金量极高"},{"year":"2024年","event":"武夷山国家公园实现跨省统一管理，生态保护与文化传承协同发展"}]},"geography":{"topography":"以中山和低山地貌为主，主峰黄岗山海拔2160.8米，为中国东南大陆最高峰。丹霞地貌发育典型，九曲溪沿丹霞岩层蜿蜒流淌，形成「九曲清溪、三十六峰」的独特景观。","climate":"中亚热带湿润季风气候，年均气温17-19℃，年降水量1800-2200毫米。垂直气候差异明显，从山脚的亚热带到山顶的温带，形成完整的垂直气候带谱。","hydrology":"九曲溪是武夷山的灵魂，自西向东贯穿公园，全长约60公里。溪水清澈见底，两岸丹崖壁立，是中国最美的溪流景观之一。","ecosystem":"中亚热带原生性常绿阔叶林生态系统，保存了地球同纬度最完整的森林植被。拥有世界同纬度带现存最典型、面积最大、保存最完整的中亚热带原生性森林生态系统，被誉为「世界生物之窗」。"},"species":[{"name":"中华穿山甲","latin":"Manis pentadactyla","level":"极危 (CR)","description":"古老的哺乳动物，以蚂蚁和白蚁为食，是森林生态系统的健康指示物种。武夷山是中国穿山甲的重要栖息地。","baike_url":"https://baike.baidu.com/item/%E4%B8%AD%E5%8D%8E%E7%A9%BF%E5%B1%B1%E7%94%B2","baike_label":"百度百科"},{"name":"黄腹角雉","latin":"Tragopan caboti","level":"易危 (VU)","description":"中国特有雉类，雄性繁殖期喉部有蓝红色肉裙展开，极为艳丽。武夷山是其模式标本产地和核心分布区。","baike_url":"https://baike.baidu.com/item/%E9%BB%84%E8%85%B9%E8%A7%92%E9%9B%89","baike_label":"百度百科"},{"name":"崇安髭蟾","latin":"Vibrissaphora liui","level":"近危 (NT)","description":"武夷山特有物种，雄性上唇有黑色角质刺（「髭」），栖息于海拔800米以上的山溪中，对水质要求极高。","baike_url":"https://baike.baidu.com/item/%E5%B4%87%E5%AE%89%E9%AB%AD%E8%9F%BE","baike_label":"百度百科"},{"name":"武夷山铁杉","latin":"Tsuga chinensis var. tchekiangensis","level":"近危 (NT)","description":"中国特有裸子植物，在武夷山形成大面积纯林，是亚热带山地针叶林的建群树种，记录了古气候变化历史。","baike_url":"https://baike.baidu.com/item/%E6%AD%A6%E5%A4%B7%E5%B1%B1%E9%93%81%E6%9D%89","baike_label":"百度百科"},{"name":"南方红豆杉","latin":"Taxus wallichiana var. mairei","level":"濒危 (EN)","description":"珍贵药用和观赏树种，武夷山的古红豆杉树龄可达千年以上，是中国南方红豆杉遗传资源的重要保存地。","baike_url":"https://baike.baidu.com/item/%E5%8D%97%E6%96%B9%E7%BA%A2%E8%B1%86%E6%9D%89","baike_label":"百度百科"}],"conservation":{"text":"武夷山国家公园在生态保护和文化传承两方面并重。通过严格保护原生性森林生态系统和丹霞地貌自然遗产，同时维持了延续千年的武夷岩茶传统种植文化，实现了人与自然的和谐共生。","highlights":["原生性森林覆盖率保持在96%以上，居全国前列","发现并记录新物种超过100种，是生物多样性研究热点","武夷岩茶传统种植系统被列为全球重要农业文化遗产","九曲溪水质长期保持国家地表水I类标准","实现跨福建、江西两省的统一保护管理"]},"gallery":["https://i2.chinanews.com.cn/simg/hd/2021/10/12/008a666232e24dfa907bd5ea6c19dd9e.jpg","https://i2.chinanews.com.cn/simg/hd/2021/10/12/79e436638d3f41c7958dfe8e79c55534.jpg","https://i2.chinanews.com.cn/simg/hd/2021/10/12/325cce6ae0b14abaa89e82a0fe9d703a.jpg","https://i2.chinanews.com.cn/simg/hd/2021/10/12/ca6bd8dd7188438d837feac1a7142557.jpg","https://i2.chinanews.com.cn/simg/hd/2021/10/12/3293d4ae71004f1ab2cbe0224fd40e51.jpg"],"references":[{"title":"武夷山国家公园管理局","url":"https://www.wuyishanpark.com/"},{"title":"UNESCO 世界遗产 - 武夷山","url":"https://whc.unesco.org/en/list/911"},{"title":"武夷山国家级自然保护区","url":"https://www.wysnr.com/"}]}};
+
+const STATS_DATA = {
+  "area": [
+    {"park":"三江源","value":19.07,"unit":"万km²"},
+    {"park":"大熊猫","value":2.20,"unit":"万km²"},
+    {"park":"东北虎豹","value":1.41,"unit":"万km²"},
+    {"park":"海南热带雨林","value":0.44,"unit":"万km²"},
+    {"park":"武夷山","value":0.13,"unit":"万km²"}
+  ],
+  "speciesCount": [
+    {"park":"三江源","value":5},
+    {"park":"大熊猫","value":5},
+    {"park":"东北虎豹","value":5},
+    {"park":"海南热带雨林","value":5},
+    {"park":"武夷山","value":5}
+  ]
+};
+
+const TRANSITION_TEXTS = {
+  sanjiangyuan: "从世界屋脊出发，这里是中国三条母亲河的源头",
+  daxiongmao:  "向东而行，横断山脉和秦岭之间藏着国宝大熊猫的家园",
+  dongbei:     "一路北上，长白山脉中生活着森林之王东北虎和东北豹",
+  hainan:      "南下渡海，海南岛上保存着中国唯一的岛屿热带雨林",
+  wuyishan:    "东行至武夷，这里融合了千年文化与原生森林的双重遗产"
+};
+
+/* ── State ────────────────────────────────── */
+let map, parkLayers = {}, activeParkId = null, parkContent = {}, parkStats = {};
+let isAutoPlaying = false, autoPlayTimer = null;
+
+/* ── Init ─────────────────────────────────── */
+document.addEventListener("DOMContentLoaded", () => {
+  initMap();
+  loadParks();
+  loadContent();
+});
+
+/* ── MAP ──────────────────────────────────── */
+function initMap() {
+  map = L.map("map", {
+    center: [35, 105],
+    zoom: 5,
+    zoomControl: false,
+    attributionControl: false
+  });
+
+  // Force Leaflet to recalculate container size
+  setTimeout(() => map.invalidateSize(), 100);
+  window.addEventListener("resize", () => map.invalidateSize());
+
+  // Base layers
+  const osmLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18
+  }).addTo(map);
+
+  const satLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+    maxZoom: 18,
+    attribution: "Esri"
+  });
+
+  // Zoom control
+  L.control.zoom({ position: "bottomright" }).addTo(map);
+
+  // Coordinates display (top)
+  const coordsCtrl = L.control({ position: "topleft" });
+  coordsCtrl.onAdd = function() {
+    const div = L.DomUtil.create("div", "coords-display");
+    return div;
+  };
+  coordsCtrl.addTo(map);
+
+  // Scale (below coords, added second so it stacks below)
+  L.control.scale({ position: "topleft", metric: true, imperial: false }).addTo(map);
+  map.on("mousemove", e => {
+    const el = document.querySelector(".coords-display");
+    if (el) el.textContent = `Lng ${e.latlng.lng.toFixed(4)}  Lat ${e.latlng.lat.toFixed(4)} | Zoom ${map.getZoom()}`;
+  });
+
+  // Basemap switch
+  const bsCtrl = L.control({ position: "topright" });
+  bsCtrl.onAdd = function() {
+    const div = L.DomUtil.create("div", "basemap-switch");
+    div.innerHTML = `<button class="bm-btn active" data-bm="osm">地图</button><button class="bm-btn" data-bm="tdt">卫星</button>`;
+    div.querySelectorAll("button").forEach(btn => {
+      btn.onclick = function() {
+        if (this.dataset.bm === "osm") { osmLayer.addTo(map); map.removeLayer(satLayer); }
+        else { satLayer.addTo(map); map.removeLayer(osmLayer); }
+        div.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+        this.classList.add("active");
+      };
+    });
+    return div;
+  };
+  bsCtrl.addTo(map);
+}
+
+/* ── INLINE DATA (no fetch, works with file://) ─ */
+const GEOJSON_DATA = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{"id":"sanjiangyuan","name":"三江源国家公园","nameShort":"三江源国家公园","order":1,"color":"#4cc9f0","region":"西部","title":"三江源国家公园","center":[93.5,34.5],"zoom":7},"geometry":{"type":"Polygon","coordinates":[[[89.8,36.2],[90.5,36.0],[91.2,36.3],[92.0,36.5],[92.8,36.4],[93.5,36.6],[94.5,36.5],[95.5,36.3],[96.5,36.0],[97.2,35.7],[97.8,35.2],[97.5,34.6],[97.0,34.0],[96.8,33.4],[96.3,32.8],[95.5,32.3],[94.5,32.0],[93.5,31.8],[92.5,32.0],[91.8,32.3],[91.0,32.8],[90.0,33.2],[89.5,33.8],[89.0,34.5],[89.2,35.2],[89.5,35.8],[89.8,36.2]]]}},{"type":"Feature","properties":{"id":"daxiongmao","name":"大熊猫国家公园","nameShort":"大熊猫国家公园","order":2,"color":"#06d6a0","region":"中部","title":"大熊猫国家公园","center":[104.0,32.5],"zoom":7},"geometry":{"type":"MultiPolygon","coordinates":[[[[102.3,33.8],[103.0,34.1],[104.0,34.0],[104.8,33.7],[105.5,33.3],[106.0,32.8],[106.3,32.2],[106.0,31.5],[105.3,31.0],[104.5,30.8],[103.5,31.0],[102.8,30.8],[102.0,30.5],[101.8,30.0],[102.0,29.5],[102.5,29.3],[103.2,29.5],[103.8,30.0],[104.5,30.3],[105.0,30.8],[105.8,31.2],[106.5,31.8],[106.8,32.5],[106.3,33.0],[105.5,33.5],[104.5,33.8],[103.5,34.0],[102.5,33.8],[102.3,33.8]],[[107.0,33.3],[107.5,33.5],[108.0,33.5],[108.3,33.2],[108.2,32.8],[107.8,32.6],[107.2,32.6],[106.8,32.8],[106.8,33.1],[107.0,33.3]]]]}},{"type":"Feature","properties":{"id":"dongbei","name":"东北虎豹国家公园","nameShort":"东北虎豹国家公园","order":3,"color":"#f8961e","region":"东部","title":"东北虎豹国家公园","center":[130.5,43.5],"zoom":8},"geometry":{"type":"Polygon","coordinates":[[[129.6,44.3],[130.0,44.5],[130.5,44.6],[131.0,44.4],[131.4,44.0],[131.5,43.5],[131.3,43.0],[131.0,42.6],[130.5,42.4],[130.0,42.5],[129.6,42.8],[129.5,43.2],[129.4,43.6],[129.5,44.0],[129.6,44.3]]]}},{"type":"Feature","properties":{"id":"hainan","name":"海南热带雨林国家公园","nameShort":"海南热带雨林国家公园","order":4,"color":"#f72585","region":"南部","title":"海南热带雨林国家公园","center":[109.5,19.0],"zoom":9},"geometry":{"type":"Polygon","coordinates":[[[108.9,19.6],[109.3,19.7],[109.7,19.6],[110.0,19.4],[110.1,19.0],[110.0,18.6],[109.8,18.3],[109.3,18.2],[108.9,18.3],[108.7,18.6],[108.6,19.0],[108.7,19.4],[108.9,19.6]]]}},{"type":"Feature","properties":{"id":"wuyishan","name":"武夷山国家公园","nameShort":"武夷山国家公园","order":5,"color":"#b57edc","region":"东部","title":"武夷山国家公园","center":[117.7,27.7],"zoom":10},"geometry":{"type":"Polygon","coordinates":[[[117.3,28.1],[117.5,28.2],[117.8,28.2],[118.0,28.0],[118.2,27.8],[118.2,27.5],[118.0,27.2],[117.8,27.1],[117.5,27.0],[117.2,27.1],[117.0,27.3],[116.9,27.6],[117.0,27.9],[117.2,28.1],[117.3,28.1]]]}}]};
+
+/* ── LOAD PARKS ───────────────────────────── */
+function loadParks() {
+  GEOJSON_DATA.features.forEach(f => {
+    const id = f.properties.id;
+    const color = PARK_COLORS[id];
+    const layer = L.geoJSON(f, {
+      style: { color: color, fillColor: color, fillOpacity: 0.22, weight: 2 },
+      onEachFeature: (feat, l) => {
+        l.on("click", () => selectPark(id));
+        l.on("mouseover", function() { if (activeParkId !== id) this.setStyle({ fillOpacity: 0.38, weight: 3 }); });
+        l.on("mouseout",  function() { if (activeParkId !== id) this.setStyle({ fillOpacity: 0.22, weight: 2 }); });
+      }
+    }).addTo(map);
+    parkLayers[id] = layer;
+  });
+}
+
+/* ── LOAD CONTENT ─────────────────────────── */
+function loadContent() {
+  parkContent = CONTENT_DATA;
+  parkStats = STATS_DATA;
+  renderSections();
+  setupScrollObserver();
+}
+
+function renderSections() {
+  const panel = document.getElementById("content-panel");
+  PARK_ORDER.forEach((id, i) => {
+    const p = parkContent[id];
+    if (!p) return;
+    const sec = document.createElement("section");
+    sec.className = "park-section";
+    sec.id = "section-" + id;
+    sec.dataset.parkId = id;
+    sec.innerHTML = `
+      <div class="chapter-num">Chapter ${i + 1} of 5</div>
+      <h2>${p.name}</h2>
+      <p class="park-location">${p.location}</p>
+      <p class="park-area">${p.area}</p>
+      <p class="park-desc">${p.description}</p>
+    `;
+    panel.appendChild(sec);
+  });
+}
+
+/* ── SCROLL OBSERVER ──────────────────────── */
+function setupScrollObserver() {
+  // Section detection
+  const secObs = new IntersectionObserver(entries => {
+    if (isManualNav) return;
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.dataset.parkId;
+        if (id && activeParkId !== id) {
+          selectPark(id, { flyTo: true, updateNav: true, showDetail: false });
+        }
+      }
+    });
+  }, { threshold: 0.35 });
+
+  document.querySelectorAll(".park-section").forEach(s => secObs.observe(s));
+}
+
+/* ── SELECT PARK ──────────────────────────── */
+function selectPark(id, opts = {}) {
+  const defaults = { flyTo: true, updateNav: true, showDetail: false };
+  const o = Object.assign(defaults, opts);
+
+  // Reset previous
+  if (activeParkId && parkLayers[activeParkId]) {
+    const c = PARK_COLORS[activeParkId];
+    parkLayers[activeParkId].setStyle({ fillOpacity: 0.22, weight: 2, color: c, fillColor: c });
+  }
+
+  activeParkId = id;
+
+  // Highlight current
+  if (parkLayers[id]) {
+    parkLayers[id].setStyle({ fillOpacity: 0.5, weight: 3, color: "#06d6a0", fillColor: "#06d6a0" });
+    if (o.flyTo) {
+      const bounds = parkLayers[id].getBounds();
+      map.flyToBounds(bounds.isValid() ? bounds : parkLayers[id].getBounds(), { padding: [80, 80], duration: 1.5, maxZoom: 10 });
+    }
+  }
+
+  if (o.updateNav) updateNavDots(id);
+
+  updateNavButtons();
+  showParkLabel(id);
+  showDetailPanel(id);
+
+  // Scroll to section
+  const sec = document.getElementById("section-" + id);
+  if (sec && o.flyTo) {
+    sec.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+}
+
+/* ── NAV DOTS ─────────────────────────────── */
+function updateNavDots(id) {
+  document.querySelectorAll("#nav-bar .nav-dot").forEach(dot => {
+    dot.classList.toggle("active", dot.dataset.park === id);
+  });
+}
+
+/* ── PARK LABEL ───────────────────────────── */
+let parkLabelCtrl = null;
+
+function showParkLabel(id) {
+  if (parkLabelCtrl) map.removeControl(parkLabelCtrl);
+  const park = parkContent[id];
+  if (!park) return;
+  const title = park.name;
+  parkLabelCtrl = L.control({ position: "topright" });
+  parkLabelCtrl.onAdd = function() {
+    const div = L.DomUtil.create("div", "park-label-popup");
+    div.innerHTML = `<strong>${title}</strong>`;
+    setTimeout(() => { if (parkLabelCtrl) map.removeControl(parkLabelCtrl); parkLabelCtrl = null; }, 3500);
+    return div;
+  };
+  parkLabelCtrl.addTo(map);
+}
+
+let isManualNav = false;
+
+// Nav dot clicks
+document.addEventListener("click", e => {
+  const dot = e.target.closest("#nav-bar .nav-dot");
+  if (dot) {
+    isManualNav = true;
+    selectPark(dot.dataset.park);
+    setTimeout(() => { isManualNav = false; }, 2000);
+  }
+});
+
+/* ── DETAIL PANEL ─────────────────────────── */
+let detailParkId = null;
+
+function showDetailPanel(parkId) {
+  detailParkId = parkId;
+  activeModule = null;
+  const panel = document.getElementById("map-top-panel");
+  panel.style.display = "flex";
+  document.getElementById("detail-toggle").classList.add("dt-hidden");
+  document.querySelectorAll(".mtp-tab").forEach(t => t.classList.remove("active"));
+  document.getElementById("mtp-content").classList.remove("show");
+}
+
+let activeModule = null;
+
+function showDetail(parkId, module) {
+  const park = parkContent[parkId];
+  if (!park) return;
+  detailParkId = parkId;
+
+  const panel = document.getElementById("map-top-panel");
+  panel.style.display = "flex";
+
+  // Toggle: clicking same tab again collapses content
+  if (activeModule === module) {
+    document.querySelectorAll(".mtp-tab").forEach(t => t.classList.remove("active"));
+    document.getElementById("mtp-content").classList.remove("show");
+    activeModule = null;
+    return;
+  }
+
+  activeModule = module;
+
+  // Highlight active tab, clear others
+  document.querySelectorAll(".mtp-tab").forEach(t => t.classList.remove("active"));
+  const tab = document.querySelector(`.mtp-tab[data-module="${module}"]`);
+  if (tab) tab.classList.add("active");
+
+  // Render content
+  const content = document.getElementById("mtp-content");
+  content.innerHTML = renderModuleContent(park, module);
+  content.classList.add("show");
+}
+
+function closeDetail() {
+  const panel = document.getElementById("map-top-panel");
+  panel.classList.add("mtp-slide-out");
+  document.getElementById("mtp-content").classList.remove("show");
+  document.querySelectorAll(".mtp-tab").forEach(t => t.classList.remove("active"));
+  document.getElementById("detail-toggle").classList.remove("dt-hidden");
+  activeModule = null;
+  setTimeout(() => {
+    panel.style.display = "none";
+    panel.classList.remove("mtp-slide-out");
+  }, 300);
+}
+
+function reopenDetail() {
+  const panel = document.getElementById("map-top-panel");
+  panel.style.display = "flex";
+  panel.classList.add("mtp-slide-in");
+  setTimeout(() => panel.classList.remove("mtp-slide-in"), 350);
+  document.getElementById("detail-toggle").classList.add("dt-hidden");
+}
+
+// Tab click handlers
+document.addEventListener("click", function(e) {
+  const tab = e.target.closest(".mtp-tab");
+  if (tab && detailParkId) {
+    showDetail(detailParkId, tab.dataset.module);
+  }
+});
+
+function renderModuleContent(park, module) {
+  switch (module) {
+    case "history":
+      return `<div class="timeline">${park.history.timeline.map(t => `
+        <div class="timeline-item">
+          <div class="timeline-year">${t.year}</div>
+          <div class="timeline-event">${t.event}</div>
+        </div>`).join("")}</div>`;
+
+    case "geography":
+      return `<div class="mtp-subtabs">
+        <button class="mtp-subtab active" onclick="showGeoSub(this,'topography','${park.name}')">地形地貌</button>
+        <button class="mtp-subtab" onclick="showGeoSub(this,'climate','${park.name}')">气候类型</button>
+        <button class="mtp-subtab" onclick="showGeoSub(this,'hydrology','${park.name}')">水文特征</button>
+        <button class="mtp-subtab" onclick="showGeoSub(this,'ecosystem','${park.name}')">生态系统</button>
+      </div>
+      <div class="mtp-subcontent" id="geo-content">${park.geography.topography}</div>`;
+
+    case "species":
+      return `<div class="species-grid">${park.species.map(s => `
+        <div class="species-card">
+          <h4>${s.name}</h4>
+          <p class="latin">${s.latin}</p>
+          <span class="level">${s.level}</span>
+          <p>${s.description}</p>
+          ${s.baike_url ? `<a href="${s.baike_url}" target="_blank" rel="noopener" class="species-link">${s.baike_label || '百度百科'}</a>` : ''}
+        </div>`).join("")}</div>`;
+
+    case "conservation":
+      return `<p style="color:var(--text-2);line-height:1.75;margin-bottom:0.8rem;">${park.conservation.text}</p>
+        <div class="highlights">${park.conservation.highlights.map(h => `<div class="highlight-card">${h}</div>`).join("")}</div>`;
+
+    case "gallery":
+      return `<div class="gallery-grid">${park.gallery.map(src => `
+        <img src="${src}" alt="" loading="lazy" onclick="openLightbox('${src}')">
+      `).join("")}</div>`;
+
+    case "references":
+      return `<ul class="ref-list">${park.references.map(r => `
+        <li><a href="${r.url}" target="_blank" rel="noopener">${r.title}</a></li>
+      `).join("")}</ul>`;
+
+    default: return "";
+  }
+}
+
+function showGeoSub(btn, key, parkName) {
+  if (!detailParkId) return;
+  const park = parkContent[detailParkId];
+  if (!park) return;
+  document.querySelectorAll(".mtp-subtab").forEach(s => s.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("geo-content").textContent = park.geography[key];
+}
+
+function openLightbox(src) {
+  document.getElementById("lightbox-img").src = src;
+  document.getElementById("lightbox").classList.remove("hidden");
+}
+
+/* ── COMPARE MODAL ────────────────────────── */
+function showCompare() {
+  document.getElementById("compare-modal").classList.add("show");
+  document.body.style.overflow = "hidden";
+
+  setTimeout(() => {
+    renderAreaChart();
+    renderSpeciesChart();
+  }, 150);
+}
+
+function closeCompare() {
+  document.getElementById("compare-modal").classList.remove("show");
+  document.body.style.overflow = "";
+}
+
+document.getElementById("compare-modal").addEventListener("click", function(e) {
+  if (e.target === this) closeCompare();
+});
+
+function renderAreaChart() {
+  const dom = document.getElementById("chart-area");
+  const chart = echarts.init(dom);
+  chart.setOption({
+    backgroundColor: "#111118",
+    title: { text: "面积对比（万平方公里）", left: "center", top: 10, textStyle: { color: "#e0e0e4", fontSize: 14 } },
+    tooltip: { trigger: "axis", formatter: "{b}: {c} 万km²" },
+    xAxis: {
+      type: "category",
+      data: parkStats.area.map(a => a.park),
+      axisLabel: { color: "#999", fontSize: 11 },
+      axisLine: { lineStyle: { color: "#252530" } }
+    },
+    yAxis: {
+      type: "value",
+      name: "万km²",
+      axisLabel: { color: "#999" },
+      splitLine: { lineStyle: { color: "#252530" } }
+    },
+    series: [{
+      type: "bar",
+      data: parkStats.area.map((a, i) => ({
+        value: a.value,
+        itemStyle: { color: Object.values(PARK_COLORS)[i], borderRadius: [4,4,0,0] }
+      })),
+      label: { show: true, position: "top", color: "#e0e0e4", fontSize: 12, formatter: "{c}" }
+    }],
+    grid: { left: "8%", right: "6%", top: "18%", bottom: "10%" }
+  });
+}
+
+function renderSpeciesChart() {
+  const dom = document.getElementById("chart-species");
+  const chart = echarts.init(dom);
+  chart.setOption({
+    backgroundColor: "#111118",
+    title: { text: "代表性物种展示数量", left: "center", top: 10, textStyle: { color: "#e0e0e4", fontSize: 14 } },
+    tooltip: { trigger: "axis" },
+    xAxis: {
+      type: "category",
+      data: parkStats.speciesCount.map(s => s.park),
+      axisLabel: { color: "#999", fontSize: 11 },
+      axisLine: { lineStyle: { color: "#252530" } }
+    },
+    yAxis: {
+      type: "value",
+      max: 8,
+      axisLabel: { color: "#999" },
+      splitLine: { lineStyle: { color: "#252530" } }
+    },
+    series: [{
+      type: "bar",
+      data: parkStats.speciesCount.map(s => ({ value: s.value, itemStyle: { color: "#06d6a0", borderRadius: [4,4,0,0] } })),
+      label: { show: true, position: "top", color: "#e0e0e4", fontSize: 12, formatter: "{c}" }
+    }],
+    grid: { left: "8%", right: "6%", top: "18%", bottom: "10%" }
+  });
+}
+
+/* ── STORY NAVIGATION ─────────────────────── */
+function getCurrentIdx() { return PARK_ORDER.indexOf(activeParkId || "sanjiangyuan"); }
+
+function prevPark() {
+  const idx = getCurrentIdx();
+  if (idx > 0) navigateToPark(PARK_ORDER[idx - 1]);
+}
+
+function nextPark() {
+  const idx = getCurrentIdx();
+  if (idx < PARK_ORDER.length - 1) {
+    navigateToPark(PARK_ORDER[idx + 1]);
+  } else {
+    navigateToPark(PARK_ORDER[0]);
+    showToast("返回第一站：三江源国家公园");
+  }
+  updateNavButtons();
+}
+
+function updateNavButtons() {
+  const btn = document.getElementById("btn-next");
+  const idx = getCurrentIdx();
+  if (idx >= PARK_ORDER.length - 1) {
+    btn.textContent = "下一站";
+    btn.innerHTML = "&#x21BB; 重新开始";
+  } else {
+    btn.innerHTML = "下一站 &#x25B6;";
+  }
+}
+
+function navigateToPark(id) {
+  isManualNav = true;
+  selectPark(id);
+  showTransitionText(id);
+  setTimeout(() => { isManualNav = false; }, 2000);
+}
+
+function showTransitionText(id) {
+  if (TRANSITION_TEXTS[id]) showToast(TRANSITION_TEXTS[id]);
+}
+
+function showToast(msg) {
+  const old = document.querySelector(".toast");
+  if (old) old.remove();
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
+/* ── AUTO PLAY ────────────────────────────── */
+function toggleAutoPlay() {
+  const btn = document.getElementById("btn-autoplay");
+  if (isAutoPlaying) {
+    stopAutoPlay();
+    btn.innerHTML = "&#x25B6; 开始漫游";
+    return;
+  }
+  startAutoPlay();
+  btn.innerHTML = "&#x23F8; 暂停漫游";
+}
+
+function startAutoPlay() {
+  isAutoPlaying = true;
+  if (!activeParkId) navigateToPark(PARK_ORDER[0]);
+
+  autoPlayTimer = setInterval(() => {
+    const idx = getCurrentIdx();
+    if (idx < PARK_ORDER.length - 1) {
+      navigateToPark(PARK_ORDER[idx + 1]);
+      speakPark(PARK_ORDER[idx + 1]);
+    } else {
+      stopAutoPlay();
+      document.getElementById("btn-autoplay").innerHTML = "&#x25B6; 重新漫游";
+      showToast("漫游结束！感谢浏览五大国家公园");
+    }
+  }, 6000);
+}
+
+function stopAutoPlay() {
+  isAutoPlaying = false;
+  clearInterval(autoPlayTimer);
+  window.speechSynthesis && window.speechSynthesis.cancel();
+}
+
+function speakPark(id) {
+  const synth = window.speechSynthesis;
+  if (!synth) return;
+  const p = parkContent[id];
+  if (!p) return;
+  const u = new SpeechSynthesisUtterance(p.name + "，" + p.location + "，面积" + p.area);
+  u.lang = "zh-CN";
+  u.rate = 0.9;
+  u.pitch = 1.0;
+  u.volume = 0.8;
+  synth.speak(u);
+}
+
+/* ── KEYBOARD ─────────────────────────────── */
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") { closeDetail(); closeCompare(); stopAutoPlay(); }
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+  if (e.key === "ArrowRight") nextPark();
+  if (e.key === "ArrowLeft")  prevPark();
+  if (e.key === " ") { e.preventDefault(); toggleAutoPlay(); }
+});
+</script>
+</body>
+</html>

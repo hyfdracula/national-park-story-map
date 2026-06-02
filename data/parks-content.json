@@ -1,0 +1,549 @@
+{
+  "sanjiangyuan": {
+    "name": "三江源国家公园",
+    "established": "2021年10月正式设立",
+    "location": "青海省南部，青藏高原腹地",
+    "area": "19.07万平方公里",
+    "description": "三江源国家公园位于青藏高原腹地，是中国面积最大的国家公园，平均海拔4500米以上。这里是长江、黄河、澜沧江三条亚洲重要河流的发源地，被誉为「中华水塔」，也是世界上海拔最高、面积最大的高原湿地生态系统。",
+    "color": "#4cc9f0",
+    "history": {
+      "timeline": [
+        {
+          "year": "2000年",
+          "event": "建立三江源省级自然保护区"
+        },
+        {
+          "year": "2003年",
+          "event": "升格为国家级自然保护区"
+        },
+        {
+          "year": "2016年",
+          "event": "三江源国家公园体制试点正式启动"
+        },
+        {
+          "year": "2021年",
+          "event": "正式设立三江源国家公园，成为首批五个国家公园中面积最大的一个"
+        }
+      ]
+    },
+    "geography": {
+      "topography": "以高原山地为主，平均海拔4500米以上，昆仑山脉、唐古拉山脉和巴颜喀拉山脉交汇于此。地貌包括高寒草甸、冰川、湖泊和河谷，是中国冰川集中分布区之一。",
+      "climate": "典型的高原大陆性气候，年均气温在0℃以下，冬季漫长寒冷，夏季短暂凉爽。年降水量300-500毫米，集中在夏季，蒸发量大，昼夜温差显著。",
+      "hydrology": "长江总水量的25%、黄河总水量的49%、澜沧江总水量的15%均源自三江源地区。区内湖泊星罗棋布，包括扎陵湖、鄂陵湖等著名淡水湖，湿地面积超过3万平方公里。",
+      "ecosystem": "高寒草甸生态系统为主，辅以高寒湿地、高寒草原和高寒荒漠。是全球高海拔地区生物多样性最丰富的区域之一，也是重要的碳汇区和气候调节区。"
+    },
+    "species": [
+      {
+        "name": "藏羚羊",
+        "latin": "Pantholops hodgsonii",
+        "level": "近危 (NT)",
+        "description": "青藏高原特有物种，以季节性迁徙闻名，雄性有细长直角。三江源是藏羚羊最重要的栖息地之一。",
+        "baike_url": "https://baike.baidu.com/item/%E8%97%8F%E7%BE%9A%E7%BE%8A",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "雪豹",
+        "latin": "Panthera uncia",
+        "level": "易危 (VU)",
+        "description": "高原生态系统的顶级捕食者，被称为「雪山之王」。三江源是中国雪豹种群密度最高的区域之一。",
+        "baike_url": "https://baike.baidu.com/item/%E9%9B%AA%E8%B1%B9",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "藏野驴",
+        "latin": "Equus kiang",
+        "level": "无危 (LC)",
+        "description": "高原特有的野马科动物，善于在开阔的高寒草甸上奔跑，常成群活动。",
+        "baike_url": "https://baike.baidu.com/item/%E8%97%8F%E9%87%8E%E9%A9%B4",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "黑颈鹤",
+        "latin": "Grus nigricollis",
+        "level": "近危 (NT)",
+        "description": "唯一生活在高原的鹤类，每年夏季在三江源湿地繁殖，是湿地生态健康的指示物种。",
+        "baike_url": "https://baike.baidu.com/item/%E9%BB%91%E9%A2%88%E9%B9%A4",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "青海云杉",
+        "latin": "Picea crassifolia",
+        "level": "无危 (LC)",
+        "description": "祁连山和昆仑山地区的特有针叶树种，耐寒耐旱，构成三江源重要的水源涵养林。",
+        "baike_url": "https://baike.baidu.com/item/%E9%9D%92%E6%B5%B7%E4%BA%91%E6%9D%89",
+        "baike_label": "百度百科"
+      }
+    ],
+    "conservation": {
+      "text": "三江源国家公园自试点以来，生态保护取得显著成效。通过退牧还草、生态移民、禁牧封育等措施，草原植被覆盖度明显提高，水源涵养能力增强。",
+      "highlights": [
+        "草地覆盖率从2016年的74%提升至2023年的82%以上",
+        "藏羚羊种群数量从1980年代的不足2万只恢复至超过7万只",
+        "雪豹种群数量稳定在1000只以上，居全国首位",
+        "黑颈鹤数量从不足200只增长至超过500只",
+        "扎陵湖、鄂陵湖水面面积持续扩大，水资源总量增加"
+      ]
+    },
+    "gallery": [
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/b03360e8e0b0448a9135180cdb658819.jpg",
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/c89bb84d11ce41efb6e52378f74e6ede.jpg",
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/87ea0cbae6ad4668b1615b1130500f45.jpg",
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/8bbb5e6f20d74412ac68b659ff968ba0.jpg",
+      "https://i2.chinanews.com.cn/simg/ypt/2023/230730/b88549ae-3967-4ece-9cb1-67385cf33087_zsite.jpg"
+    ],
+    "references": [
+      {
+        "title": "三江源国家公园管理局",
+        "url": "http://www.sanjiangyuan.org.cn/"
+      },
+      {
+        "title": "三江源国家公园总体规划（2023-2030年）",
+        "url": "https://www.gov.cn/"
+      },
+      {
+        "title": "IUCN 世界遗产名录 - 三江源",
+        "url": "https://whc.unesco.org/"
+      }
+    ]
+  },
+  "daxiongmao": {
+    "name": "大熊猫国家公园",
+    "established": "2021年10月正式设立",
+    "location": "四川、陕西、甘肃三省交界，横断山脉与秦岭交汇地带",
+    "area": "2.2万平方公里",
+    "description": "大熊猫国家公园横跨四川、陕西、甘肃三省，覆盖了中国大熊猫野生种群的主要栖息地。公园以保护大熊猫及其栖息地为核心，连接了多个原本孤立的大熊猫种群，构建了完整的生态廊道网络，对维持大熊猫种群的长期生存和基因交流具有重要意义。",
+    "color": "#06d6a0",
+    "history": {
+      "timeline": [
+        {
+          "year": "1963年",
+          "event": "中国建立首批大熊猫自然保护区（卧龙、白河等）"
+        },
+        {
+          "year": "2014年",
+          "event": "中国启动大熊猫国家公园体制试点前期研究"
+        },
+        {
+          "year": "2017年",
+          "event": "大熊猫国家公园体制试点方案获批"
+        },
+        {
+          "year": "2021年",
+          "event": "正式设立大熊猫国家公园"
+        },
+        {
+          "year": "2024年",
+          "event": "大熊猫国家公园建设成效显著，野外种群持续增长"
+        }
+      ]
+    },
+    "geography": {
+      "topography": "横跨岷山、邛崃山、大相岭、小相岭、秦岭五大山系，海拔从500米到6000米以上不等。地形复杂多变，山高谷深，是中国地势第一阶梯向第二阶梯过渡的典型区域。",
+      "climate": "亚热带湿润气候向温带过渡，垂直气候带谱完整。年均气温10-15℃，年降水量800-1800毫米，云雾多、湿度大，为箭竹等大熊猫主食竹类提供了理想生长条件。",
+      "hydrology": "岷江、嘉陵江、汉江等多条河流的发源地，水资源丰富。密集的溪流和瀑布构成了独特的水文景观，也是大熊猫和众多伴生物种的主要水源。",
+      "ecosystem": "以亚热带常绿阔叶林和山地暗针叶林为主，是全球34个生物多样性热点区域之一。除大熊猫外，还栖息着金丝猴、羚牛、朱鹮等珍稀物种，被誉为「生物多样性宝库」。"
+    },
+    "species": [
+      {
+        "name": "大熊猫",
+        "latin": "Ailuropoda melanoleuca",
+        "level": "易危 (VU)",
+        "description": "中国的国宝和全球生物多样性保护的旗舰物种，以竹子为主食，大熊猫国家公园保护了超过80%的野生种群。",
+        "baike_url": "https://baike.baidu.com/item/%E5%A4%A7%E7%86%8A%E7%8C%AB",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "川金丝猴",
+        "latin": "Rhinopithecus roxellana",
+        "level": "濒危 (EN)",
+        "description": "中国特有灵长类动物，身披金色长毛，面颊呈淡蓝色，栖息于海拔1500-3400米的山地森林中。",
+        "baike_url": "https://baike.baidu.com/item/%E5%B7%9D%E9%87%91%E4%B8%9D%E7%8C%B4",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "羚牛",
+        "latin": "Budorcas taxicolor",
+        "level": "易危 (VU)",
+        "description": "大型有蹄类动物，外形似牛又似羚，被当地人称为「六不像」，是高山森林生态系统的代表性物种。",
+        "baike_url": "https://baike.baidu.com/item/%E7%BE%9A%E7%89%9B",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "珙桐",
+        "latin": "Davidia involucrata",
+        "level": "易危 (VU)",
+        "description": "被称为「植物活化石」和「中国鸽子树」，是第三纪古热带植物区系的孑遗树种，花形如白鸽展翅。",
+        "baike_url": "https://baike.baidu.com/item/%E7%8F%99%E6%A1%90",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "红豆杉",
+        "latin": "Taxus chinensis",
+        "level": "濒危 (EN)",
+        "description": "古老珍稀树种，树皮和枝叶含有抗癌活性物质紫杉醇，具有极高的科研和药用价值。",
+        "baike_url": "https://baike.baidu.com/item/%E7%BA%A2%E8%B1%86%E6%9D%89",
+        "baike_label": "百度百科"
+      }
+    ],
+    "conservation": {
+      "text": "大熊猫国家公园建立后，保护区之间的生态廊道逐步贯通，孤立种群间的基因交流得以恢复，大熊猫野外种群数量稳步增长。",
+      "highlights": [
+        "野生大熊猫数量从1980年代的约1100只增长至1864只（第四次全国调查）",
+        "大熊猫栖息地面积扩大至约258万公顷",
+        "大熊猫受威胁等级从「濒危」降为「易危」",
+        "生态廊道连接了多个孤立种群，基因多样性改善",
+        "同时保护了超过8000种伴生动植物"
+      ]
+    },
+    "gallery": [
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/b0d020b81aa64765b0d6238209348b71.jpg",
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/da6639e7997e49b9a3a401af94870fbd.jpg",
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/81c357ebc21643599c0063e03a8e7f2c.jpg",
+      "https://picsum.photos/seed/panda-mountain/800/500",
+      "https://picsum.photos/seed/panda-bamboo/800/500"
+    ],
+    "references": [
+      {
+        "title": "大熊猫国家公园管理局",
+        "url": "https://www.giantpandanationalpark.com/"
+      },
+      {
+        "title": "IUCN 红色名录 - 大熊猫",
+        "url": "https://www.iucnredlist.org/species/712/121745669"
+      },
+      {
+        "title": "全国第四次大熊猫调查结果",
+        "url": "https://www.forestry.gov.cn/"
+      }
+    ]
+  },
+  "dongbei": {
+    "name": "东北虎豹国家公园",
+    "established": "2021年10月正式设立",
+    "location": "吉林省和黑龙江省交界，长白山脉北段",
+    "area": "1.41万平方公里",
+    "description": "东北虎豹国家公园位于中国东北部长白山脉，是中国最大的野生东北虎和东北豹栖息地。该公园地处中俄朝三国交界地带，与俄罗斯远东地区的虎豹栖息地相连，是东北虎跨境迁徙和种群交流的关键通道，对于恢复东北虎豹野生种群具有不可替代的作用。",
+    "color": "#f8961e",
+    "history": {
+      "timeline": [
+        {
+          "year": "2000年前",
+          "event": "中国境内东北虎数量不足10只，东北豹几乎绝迹"
+        },
+        {
+          "year": "2010年",
+          "event": "中国启动东北虎豹保护与栖息地恢复工程"
+        },
+        {
+          "year": "2017年",
+          "event": "东北虎豹国家公园体制试点启动"
+        },
+        {
+          "year": "2021年",
+          "event": "正式设立东北虎豹国家公园"
+        },
+        {
+          "year": "2024年",
+          "event": "东北虎数量恢复至70只以上，东北豹恢复至80只以上"
+        }
+      ]
+    },
+    "geography": {
+      "topography": "以中低山和丘陵为主，海拔300-1500米，属长白山脉延伸地带。地貌包括山地、丘陵、河谷平原和台地，地势由东南向西北倾斜。",
+      "climate": "温带大陆性季风气候，冬季漫长寒冷（最低可达-40℃），夏季温暖湿润。年均气温2-5℃，年降水量500-800毫米，积雪期长达5个月。",
+      "hydrology": "图们江、绥芬河等水系贯穿公园，密集的河网为野生动物提供了充足的水源。冬季河面结冰，形成野生动物跨越的天然通道。",
+      "ecosystem": "温带针阔混交林生态系统，以红松、蒙古栎等为主要树种。是中国北方生物多样性最丰富的地区之一，完整的食物链支持了东北虎、东北豹等顶级捕食者的生存。"
+    },
+    "species": [
+      {
+        "name": "东北虎",
+        "latin": "Panthera tigris altaica",
+        "level": "濒危 (EN)",
+        "description": "世界上体型最大的虎亚种，又名西伯利亚虎。成年雄性体重可达250公斤，需要约500平方公里的领地范围。",
+        "baike_url": "https://baike.baidu.com/item/%E4%B8%9C%E5%8C%97%E8%99%8E",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "东北豹",
+        "latin": "Panthera pardus orientalis",
+        "level": "极危 (CR)",
+        "description": "世界上最稀少的豹亚种之一，全球野生数量约100只，东北虎豹国家公园是其在中国唯一的稳定分布区。",
+        "baike_url": "https://baike.baidu.com/item/%E8%BF%9C%E4%B8%9C%E8%B1%B9",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "梅花鹿",
+        "latin": "Cervus nippon",
+        "level": "易危 (VU)",
+        "description": "东北虎和东北豹的主要猎物之一，栖息于针阔混交林和林缘草地，是食物链中关键的中间环节。",
+        "baike_url": "https://baike.baidu.com/item/%E6%A2%85%E8%8A%B1%E9%B9%BF",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "黑熊",
+        "latin": "Ursus thibetanus",
+        "level": "易危 (VU)",
+        "description": "典型的林栖动物，胸部有醒目的白色V形斑纹，以植物果实、昆虫和小型动物为食。",
+        "baike_url": "https://baike.baidu.com/item/%E4%BA%9A%E6%B4%B2%E9%BB%91%E7%86%8A",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "红松",
+        "latin": "Pinus koraiensis",
+        "level": "易危 (VU)",
+        "description": "东北森林的建群树种，松籽是松鼠、花鼠等小动物的主要食物来源，支撑了整个森林食物网的基础。",
+        "baike_url": "https://baike.baidu.com/item/%E7%BA%A2%E6%9D%BE",
+        "baike_label": "百度百科"
+      }
+    ],
+    "conservation": {
+      "text": "东北虎豹国家公园的建立是挽救这两个濒危物种的决定性措施。通过栖息地恢复、反盗猎行动和跨境保护合作，虎豹种群数量实现了历史性恢复。",
+      "highlights": [
+        "东北虎野外种群从2010年的不足10只恢复至70只以上",
+        "东北豹从近乎灭绝恢复至80只以上",
+        "栖息地面积扩大，连通性改善",
+        "建立了天地空一体化监测系统，实时掌握虎豹活动",
+        "与俄罗斯建立跨境保护合作机制"
+      ]
+    },
+    "gallery": [
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/8ce46340a5eb4389824d2dfbd1ff5130.jpg",
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/ca6706b94cd94eaabcff0e98eaf29089.jpg",
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/5620b5687eaa4c848a0c997a2eb02f0c.jpg",
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/14b8978236b14258981d71b861ef9d8d.jpg",
+      "https://picsum.photos/seed/changbai-snow/800/500"
+    ],
+    "references": [
+      {
+        "title": "东北虎豹国家公园管理局",
+        "url": "https://www.nationalpark.gov.cn/"
+      },
+      {
+        "title": "IUCN 红色名录 - 东北虎",
+        "url": "https://www.iucnredlist.org/"
+      },
+      {
+        "title": "WWF 东北虎保护项目",
+        "url": "https://www.wwfchina.org/"
+      }
+    ]
+  },
+  "hainan": {
+    "name": "海南热带雨林国家公园",
+    "established": "2021年10月正式设立",
+    "location": "海南省中南部，五指山至黎母山区域",
+    "area": "0.44万平方公里",
+    "description": "海南热带雨林国家公园位于海南岛中南部，是中国唯一的岛屿型热带雨林生态系统。公园保存了中国最完整、最典型的岛屿热带雨林，是海南长臂猿这一全球最濒危灵长类动物唯一的栖息地，被誉为「热带北缘的生物多样性王国」。",
+    "color": "#f72585",
+    "history": {
+      "timeline": [
+        {
+          "year": "1980年",
+          "event": "建立霸王岭、尖峰岭等自然保护区，海南长臂猿仅存7-8只"
+        },
+        {
+          "year": "2019年",
+          "event": "海南热带雨林国家公园体制试点启动"
+        },
+        {
+          "year": "2021年",
+          "event": "正式设立海南热带雨林国家公园"
+        },
+        {
+          "year": "2024年",
+          "event": "海南长臂猿种群恢复至7群42只，创历史新高"
+        }
+      ]
+    },
+    "geography": {
+      "topography": "以中山和低山地貌为主，五指山海拔1867米为海南最高峰。地势中南部高四周低，山地、丘陵、台地和平原环状分布，造就了丰富的垂直植被带谱。",
+      "climate": "热带季风气候，全年高温多雨，年均气温22-26℃，年降水量2000-3000毫米，是中国降水最丰富的地区之一。受台风影响较大，形成了独特的台风干扰生态系统。",
+      "hydrology": "南渡江、万泉河、昌化江等海南主要河流均发源于热带雨林地区。密集的溪流和瀑布景观丰富，森林涵养水源功能显著，被誉为「海南水塔」。",
+      "ecosystem": "岛屿热带雨林生态系统，植被类型包括热带低地雨林、热带山地雨林和热带云雾林。特有物种比例极高，是研究岛屿生物地理学和热带生态学的天然实验室。"
+    },
+    "species": [
+      {
+        "name": "海南长臂猿",
+        "latin": "Nomascus hainanus",
+        "level": "极危 (CR)",
+        "description": "全球最濒危的灵长类动物，仅分布于海南热带雨林国家公园。成年雄性全身黑色，雌性金黄色。2024年种群恢复至7群42只。",
+        "baike_url": "https://baike.baidu.com/item/%E6%B5%B7%E5%8D%97%E9%95%BF%E8%87%82%E7%8C%BF",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "海南坡鹿",
+        "latin": "Cervus eldii hainanus",
+        "level": "濒危 (EN)",
+        "description": "海南特有亚种，曾一度濒临灭绝（不足30只），经保护已恢复至2000余只，是物种拯救保护的典范。",
+        "baike_url": "https://baike.baidu.com/item/%E6%B5%B7%E5%8D%97%E5%9D%A1%E9%B9%BF",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "海南山鹧鸪",
+        "latin": "Arborophila ardens",
+        "level": "易危 (VU)",
+        "description": "海南特有鸟类，栖息于海拔800-1500米的山地原始林，是热带雨林健康的指示物种。",
+        "baike_url": "https://baike.baidu.com/item/%E6%B5%B7%E5%8D%97%E5%B1%B1%E9%B9%A7%E9%B8%AA",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "海南苏铁",
+        "latin": "Cycas hainanensis",
+        "level": "濒危 (EN)",
+        "description": "古老的裸子植物，已有3亿年演化历史，是热带雨林的「活化石」。海南是其全球分布中心之一。",
+        "baike_url": "https://baike.baidu.com/item/%E6%B5%B7%E5%8D%97%E8%8B%8F%E9%93%81",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "坡垒",
+        "latin": "Hopea hainanensis",
+        "level": "濒危 (EN)",
+        "description": "海南热带雨林的标志性树种，龙脑香科植物，木材优质，是热带雨林顶级群落的建群种。",
+        "baike_url": "https://baike.baidu.com/item/%E5%9D%A1%E5%9E%92",
+        "baike_label": "百度百科"
+      }
+    ],
+    "conservation": {
+      "text": "海南热带雨林国家公园建立后，通过严格的栖息地保护和生态修复，濒危物种保护成效显著，特别是海南长臂猿的种群恢复成为全球濒危物种保护的成功范例。",
+      "highlights": [
+        "海南长臂猿从1980年的7-8只恢复至7群42只（2024年）",
+        "海南坡鹿从不足30只恢复至2000余只",
+        "热带雨林覆盖率提高至95%以上",
+        "核心保护区实现全面禁伐禁猎",
+        "建立热带雨林生态系统长期定位监测网络"
+      ]
+    },
+    "gallery": [
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/1a3efd814736441dac571ca63d8f5e2f.jpg",
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/9eec7fc9731a4dafa2851b96d36c40da.jpg",
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/f8f13adfe38f41eeb66d0e868d5b8720.jpg",
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/db13be0e82db41a08dd77df15905a31f.jpg",
+      "https://picsum.photos/seed/hainan-jungle/800/500"
+    ],
+    "references": [
+      {
+        "title": "海南热带雨林国家公园管理局",
+        "url": "https://www.hntrnnp.com/"
+      },
+      {
+        "title": "IUCN 红色名录 - 海南长臂猿",
+        "url": "https://www.iucnredlist.org/"
+      },
+      {
+        "title": "全球环境基金(GEF)海南项目",
+        "url": "https://www.thegef.org/"
+      }
+    ]
+  },
+  "wuyishan": {
+    "name": "武夷山国家公园",
+    "established": "2021年10月正式设立",
+    "location": "福建省与江西省交界，武夷山脉北段",
+    "area": "0.13万平方公里（1280平方公里）",
+    "description": "武夷山国家公园横跨福建、江西两省，是中国唯一同时拥有世界文化与自然双重遗产的国家公园。公园以中亚热带原生性常绿阔叶林生态系统和丹霞地貌为特色，保存了地球同纬度最完整、最典型、面积最大的中亚热带原生性森林生态系统。",
+    "color": "#7209b7",
+    "history": {
+      "timeline": [
+        {
+          "year": "1979年",
+          "event": "建立武夷山自然保护区，为中国首批国家级自然保护区之一"
+        },
+        {
+          "year": "1999年",
+          "event": "武夷山被列入联合国教科文组织世界文化与自然双重遗产名录"
+        },
+        {
+          "year": "2016年",
+          "event": "武夷山国家公园体制试点启动"
+        },
+        {
+          "year": "2021年",
+          "event": "正式设立武夷山国家公园，面积最小但文化和生态含金量极高"
+        },
+        {
+          "year": "2024年",
+          "event": "武夷山国家公园实现跨省统一管理，生态保护与文化传承协同发展"
+        }
+      ]
+    },
+    "geography": {
+      "topography": "以中山和低山地貌为主，主峰黄岗山海拔2160.8米，为中国东南大陆最高峰。丹霞地貌发育典型，九曲溪沿丹霞岩层蜿蜒流淌，形成「九曲清溪、三十六峰」的独特景观。",
+      "climate": "中亚热带湿润季风气候，年均气温17-19℃，年降水量1800-2200毫米。垂直气候差异明显，从山脚的亚热带到山顶的温带，形成完整的垂直气候带谱。",
+      "hydrology": "九曲溪是武夷山的灵魂，自西向东贯穿公园，全长约60公里。溪水清澈见底，两岸丹崖壁立，是中国最美的溪流景观之一。",
+      "ecosystem": "中亚热带原生性常绿阔叶林生态系统，保存了地球同纬度最完整的森林植被。拥有世界同纬度带现存最典型、面积最大、保存最完整的中亚热带原生性森林生态系统，被誉为「世界生物之窗」。"
+    },
+    "species": [
+      {
+        "name": "中华穿山甲",
+        "latin": "Manis pentadactyla",
+        "level": "极危 (CR)",
+        "description": "古老的哺乳动物，以蚂蚁和白蚁为食，是森林生态系统的健康指示物种。武夷山是中国穿山甲的重要栖息地。",
+        "baike_url": "https://baike.baidu.com/item/%E4%B8%AD%E5%8D%8E%E7%A9%BF%E5%B1%B1%E7%94%B2",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "黄腹角雉",
+        "latin": "Tragopan caboti",
+        "level": "易危 (VU)",
+        "description": "中国特有雉类，雄性繁殖期喉部有蓝红色肉裙展开，极为艳丽。武夷山是其模式标本产地和核心分布区。",
+        "baike_url": "https://baike.baidu.com/item/%E9%BB%84%E8%85%B9%E8%A7%92%E9%9B%89",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "崇安髭蟾",
+        "latin": "Vibrissaphora liui",
+        "level": "近危 (NT)",
+        "description": "武夷山特有物种，雄性上唇有黑色角质刺（「髭」），栖息于海拔800米以上的山溪中，对水质要求极高。",
+        "baike_url": "https://baike.baidu.com/item/%E5%B4%87%E5%AE%89%E9%AB%AD%E8%9F%BE",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "武夷山铁杉",
+        "latin": "Tsuga chinensis var. tchekiangensis",
+        "level": "近危 (NT)",
+        "description": "中国特有裸子植物，在武夷山形成大面积纯林，是亚热带山地针叶林的建群树种，记录了古气候变化历史。",
+        "baike_url": "https://baike.baidu.com/item/%E6%AD%A6%E5%A4%B7%E5%B1%B1%E9%93%81%E6%9D%89",
+        "baike_label": "百度百科"
+      },
+      {
+        "name": "南方红豆杉",
+        "latin": "Taxus wallichiana var. mairei",
+        "level": "濒危 (EN)",
+        "description": "珍贵药用和观赏树种，武夷山的古红豆杉树龄可达千年以上，是中国南方红豆杉遗传资源的重要保存地。",
+        "baike_url": "https://baike.baidu.com/item/%E5%8D%97%E6%96%B9%E7%BA%A2%E8%B1%86%E6%9D%89",
+        "baike_label": "百度百科"
+      }
+    ],
+    "conservation": {
+      "text": "武夷山国家公园在生态保护和文化传承两方面并重。通过严格保护原生性森林生态系统和丹霞地貌自然遗产，同时维持了延续千年的武夷岩茶传统种植文化，实现了人与自然的和谐共生。",
+      "highlights": [
+        "原生性森林覆盖率保持在96%以上，居全国前列",
+        "发现并记录新物种超过100种，是生物多样性研究热点",
+        "武夷岩茶传统种植系统被列为全球重要农业文化遗产",
+        "九曲溪水质长期保持国家地表水I类标准",
+        "实现跨福建、江西两省的统一保护管理"
+      ]
+    },
+    "gallery": [
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/008a666232e24dfa907bd5ea6c19dd9e.jpg",
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/79e436638d3f41c7958dfe8e79c55534.jpg",
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/325cce6ae0b14abaa89e82a0fe9d703a.jpg",
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/ca6bd8dd7188438d837feac1a7142557.jpg",
+      "https://i2.chinanews.com.cn/simg/hd/2021/10/12/3293d4ae71004f1ab2cbe0224fd40e51.jpg"
+    ],
+    "references": [
+      {
+        "title": "武夷山国家公园管理局",
+        "url": "https://www.wuyishanpark.com/"
+      },
+      {
+        "title": "UNESCO 世界遗产 - 武夷山",
+        "url": "https://whc.unesco.org/en/list/911"
+      },
+      {
+        "title": "武夷山国家级自然保护区",
+        "url": "https://www.wysnr.com/"
+      }
+    ]
+  }
+}
