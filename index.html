@@ -121,6 +121,10 @@ body {
   50% { transform: translateY(6px); }
 }
 
+#hero-scroll-btn {
+  display: none;
+}
+
 /* ============================================
    NAVIGATION BAR
    ============================================ */
@@ -731,6 +735,29 @@ body {
   #hero .meta { gap: 0.3rem 0.6rem; font-size: 0.65rem; margin-top: 1rem; max-width: 95vw; }
   #hero .meta span { padding: 0.15rem 0.35rem; }
 
+  /* ── Hero scroll arrow (mobile only) ── */
+  #hero-scroll-btn {
+    display: flex;
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid var(--accent);
+    background: rgba(8,8,12,0.85);
+    color: var(--accent);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    animation: heroBounce 2s ease-in-out infinite;
+  }
+  @keyframes heroBounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
   /* ── Nav bar ── */
   #nav-bar { gap: 0.2rem; padding: 5px 0.4rem; flex-wrap: wrap; height: auto !important; min-height: 40px; justify-content: flex-start; }
   #nav-bar .nav-label { display: none; }
@@ -816,6 +843,9 @@ body {
   <p class="subtitle">从青藏高原到武夷山脉，从雪豹到海南长臂猿，以交互式地图讲述首批五个国家公园的生态故事</p>
   <div class="meta">
     <span>三江源</span><span>大熊猫</span><span>东北虎豹</span><span>海南热带雨林</span><span>武夷山</span>
+  </div>
+  <div id="hero-scroll-btn" onclick="document.getElementById('main-wrap').scrollIntoView({behavior:'smooth'})">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
   </div>
 </section>
 
