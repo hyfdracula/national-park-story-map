@@ -1026,9 +1026,8 @@ function initMap() {
   window.addEventListener("orientationchange", () => setTimeout(() => { resizeMobileMap(); map.invalidateSize(); }, 300));
 
   // Base layers
-  osmLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
-    maxZoom: 18,
-    attribution: "Esri"
+  osmLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18
   }).addTo(map);
 
   satLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
