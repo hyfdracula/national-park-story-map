@@ -768,7 +768,7 @@ body {
   /* ── Main layout: MAP FULLSCREEN, content hidden ── */
   #main-wrap { flex-direction: column; }
   #content-panel { display: none; }
-  #map-panel { width: 100%; height: calc(100dvh - 52px); height: calc(100vh - 52px); position: relative; top: 0; }
+  #map-panel { width: 100%; position: relative; top: 0; }
   #map { height: 100% !important; }
   .park-section { padding: 1.5rem 1rem; min-height: auto; }
   .park-section h2 { font-size: 1.3rem; }
@@ -992,6 +992,16 @@ const TRANSITION_TEXTS = {
 
 /* ── State ────────────────────────────────── */
 let map, osmLayer, satLayer, parkLayers = {}, activeParkId = null, parkContent = {}, parkStats = {};
+
+/* ── Mobile map sizing ────────────────────── */
+function resizeMobileMap() {
+  const panel = document.getElementById("map-panel");
+  if (window.innerWidth <= 768) {
+    panel.style.height = (window.innerWidth * 1.33) + "px";
+  } else {
+    panel.style.height = "";
+  }
+}
 let isAutoPlaying = false, autoPlayTimer = null;
 
 /* ── Init ─────────────────────────────────── */
@@ -1011,8 +1021,9 @@ function initMap() {
   });
 
   // Force Leaflet to recalculate container size
-  setTimeout(() => map.invalidateSize(), 100);
-  window.addEventListener("resize", () => map.invalidateSize());
+  setTimeout(() => { resizeMobileMap(); map.invalidateSize(); }, 100);
+  window.addEventListener("resize", () => { resizeMobileMap(); map.invalidateSize(); });
+  window.addEventListener("orientationchange", () => setTimeout(() => { resizeMobileMap(); map.invalidateSize(); }, 300));
 
   // Base layers
   osmLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
