@@ -885,7 +885,8 @@ body {
         <button class="mtp-tab" data-module="gallery">图片画廊</button>
         <button class="mtp-tab" data-module="references">相关文献</button>
         <button class="mtp-tab mtp-compare" onclick="showCompare()">&#x1F4CA; 对比图表</button>
-        <button class="mtp-basemap" data-bm="osm" onclick="switchBasemap('osm')">地图</button>
+        <button class="mtp-basemap" data-bm="esri" onclick="switchBasemap('esri')">Esri街道</button>
+        <button class="mtp-basemap" data-bm="osm" onclick="switchBasemap('osm')">OSM</button>
         <button class="mtp-basemap" data-bm="tdt" onclick="switchBasemap('tdt')">卫星</button>
         <button class="mtp-close" onclick="closeDetail()">&#x2715;</button>
       </div>
@@ -991,7 +992,7 @@ const TRANSITION_TEXTS = {
 };
 
 /* ── State ────────────────────────────────── */
-let map, osmLayer, satLayer, parkLayers = {}, activeParkId = null, parkContent = {}, parkStats = {};
+let map, osmLayer, esriLayer, satLayer, parkLayers = {}, activeParkId = null, parkContent = {}, parkStats = {};
 
 /* ── Mobile map sizing ────────────────────── */
 function resizeMobileMap() {
@@ -1026,9 +1027,14 @@ function initMap() {
   window.addEventListener("orientationchange", () => setTimeout(() => { resizeMobileMap(); map.invalidateSize(); }, 300));
 
   // Base layers
+  esriLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
+    maxZoom: 18,
+    attribution: "Esri"
+  }).addTo(map);
+
   osmLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 18
-  }).addTo(map);
+  });
 
   satLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
     maxZoom: 18,
@@ -1057,13 +1063,12 @@ function initMap() {
 
 /* ── BASEMAP SWITCH ──────────────────────── */
 function switchBasemap(type) {
-  if (type === "osm") {
-    osmLayer.addTo(map);
-    map.removeLayer(satLayer);
-  } else {
-    satLayer.addTo(map);
-    map.removeLayer(osmLayer);
-  }
+  map.removeLayer(esriLayer);
+  map.removeLayer(osmLayer);
+  map.removeLayer(satLayer);
+  if (type === "esri") esriLayer.addTo(map);
+  else if (type === "osm") osmLayer.addTo(map);
+  else satLayer.addTo(map);
   document.querySelectorAll(".mtp-basemap").forEach(b => b.classList.remove("active"));
   document.querySelector(`.mtp-basemap[data-bm="${type}"]`).classList.add("active");
 }
@@ -1217,7 +1222,7 @@ function showDetailPanel(parkId) {
   document.getElementById("detail-toggle").classList.add("dt-hidden");
   document.querySelectorAll(".mtp-tab").forEach(t => t.classList.remove("active"));
   document.getElementById("mtp-content").classList.remove("show");
-  document.querySelector('.mtp-basemap[data-bm="osm"]').classList.add("active");
+  document.querySelector('.mtp-basemap[data-bm="esri"]').classList.add("active");
   setTimeout(() => map.invalidateSize(), 200);
 }
 
