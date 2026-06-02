@@ -739,7 +739,7 @@ body {
   #hero-scroll-btn {
     display: flex;
     position: absolute;
-    bottom: 1.5rem;
+    bottom: 5rem;
     left: 50%;
     transform: translateX(-50%);
     width: 44px; height: 44px;
@@ -759,16 +759,16 @@ body {
   }
 
   /* ── Nav bar ── */
-  #nav-bar { gap: 0.2rem; padding: 5px 0.4rem; flex-wrap: wrap; height: auto !important; min-height: 40px; justify-content: flex-start; }
+  #nav-bar { gap: 0.2rem; padding: 5px 0.4rem; flex-wrap: wrap; height: auto; justify-content: flex-start; }
   #nav-bar .nav-label { display: none; }
   #nav-bar .nav-dot { padding: 0.15rem 0.35rem; font-size: 0.6rem; height: 20px; border-radius: 10px; }
   #nav-bar .nav-actions { margin-left: auto; }
   #nav-bar .nav-actions .btn { font-size: 0.6rem !important; padding: 0.2rem 0.5rem; }
 
   /* ── Main layout: MAP FULLSCREEN, content hidden ── */
-  #main-wrap { flex-direction: column; height: 100%; min-height: 100vh; }
+  #main-wrap { flex-direction: column; }
   #content-panel { display: none; }
-  #map-panel { width: 100%; flex: 1; position: relative; top: 0; }
+  #map-panel { width: 100%; height: calc(100vh - 52px); position: relative; top: 0; }
   #map { height: 100% !important; }
   .park-section { padding: 1.5rem 1rem; min-height: auto; }
   .park-section h2 { font-size: 1.3rem; }
@@ -1011,10 +1011,8 @@ function initMap() {
   });
 
   // Force Leaflet to recalculate container size
-  setTimeout(() => map.invalidateSize(), 200);
-  setTimeout(() => map.invalidateSize(), 600);
+  setTimeout(() => map.invalidateSize(), 100);
   window.addEventListener("resize", () => map.invalidateSize());
-  window.addEventListener("orientationchange", () => setTimeout(() => map.invalidateSize(), 300));
 
   // Base layers
   osmLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
